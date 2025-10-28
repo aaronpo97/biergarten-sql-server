@@ -321,12 +321,12 @@ CREATE TABLE BeerPost
 
 	Name NVARCHAR(100) NOT NULL,
 
-	Description NVARCHAR(MAX),
+	Description NVARCHAR(MAX) NOT NULL,
 
-	ABV DECIMAL(4,2),
+	ABV DECIMAL(4,2) NOT NULL,
 	-- Alcohol By Volume (typically 0-67%)
 
-	IBU INT,
+	IBU INT NOT NULL,
 	-- International Bitterness Units (typically 0-100)
 
 	PostedByID UNIQUEIDENTIFIER NOT NULL,
@@ -408,3 +408,11 @@ ON BeerPostPhoto(BeerPostID, PhotoID);
 
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
+
+/*
+
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Tools
+
+Scaffold-DbContext "Server=(localdb)\ProjectModels;Database=Biergarten;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -Context BiergartenContext -UseDatabaseNames -Force
+*/
