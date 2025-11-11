@@ -35,7 +35,8 @@ CREATE TABLE UserAccount
 
 	Email VARCHAR(128) NOT NULL,
 
-	CreatedAt DATETIME NOT NULL,
+	CreatedAt DATETIME NOT NULL
+		CONSTRAINT DF_UserAccount_CreatedAt DEFAULT GETDATE(),
 
 	UpdatedAt DATETIME,
 
@@ -53,6 +54,7 @@ CREATE TABLE UserAccount
 		UNIQUE (Email),
 
 );
+
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 
