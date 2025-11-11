@@ -41,6 +41,8 @@ CREATE TABLE UserAccount
 
 	DateOfBirth DATETIME NOT NULL,
 
+	Timer ROWVERSION,
+
 	CONSTRAINT PK_UserAccount 
 		PRIMARY KEY (UserAccountID),
 
@@ -51,27 +53,6 @@ CREATE TABLE UserAccount
 		UNIQUE (Email),
 
 );
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-CREATE TABLE Comment
-(
-	CommentID UNIQUEIDENTIFIER
-		CONSTRAINT DF_CommentID DEFAULT NEWID(),
-
-	CommentText NVARCHAR(512),
-
-	PostedByID UNIQUEIDENTIFIER NOT NULL,
-
-	CONSTRAINT PK_CommentID
-		PRIMARY KEY (CommentID),
-
-	CONSTRAINT FK_PostedByID
-		FOREIGN KEY (PostedByID) REFERENCES UserAccount(UserAccountID),
-)
-
-CREATE NONCLUSTERED INDEX IX_Comment_PostedByID
-ON Comment(PostedByID);
-
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 
@@ -87,6 +68,8 @@ CREATE TABLE Photo -- All photos must be linked to a user account, you cannot de
 
 	UploadedAt DATETIME NOT NULL
 		CONSTRAINT DF_Photo_UploadedAt DEFAULT GETDATE(),
+
+	Timer ROWVERSION,
 
 	CONSTRAINT PK_Photo
 		PRIMARY KEY (PhotoID),
@@ -111,6 +94,8 @@ CREATE TABLE UserAvatar -- delete avatar photo when user account is deleted
 	UserAccountID UNIQUEIDENTIFIER NOT NULL,
 
 	PhotoID UNIQUEIDENTIFIER NOT NULL,
+
+	Timer ROWVERSION,
 
 	CONSTRAINT PK_UserAvatar PRIMARY KEY (UserAvatarID),
 
@@ -143,6 +128,8 @@ CREATE TABLE UserVerification -- delete verification data when user account is d
 	VerificationDateTime DATETIME NOT NULL
 		CONSTRAINT DF_VerificationDateTime 
 		DEFAULT GETDATE(),
+
+	Timer ROWVERSION,
 
 	CONSTRAINT PK_UserVerification 
 		PRIMARY KEY (UserVerificationID),
@@ -178,6 +165,8 @@ CREATE TABLE UserCredential -- delete credentials when user account is deleted
 	Hash NVARCHAR(100) NOT NULL,
 	-- uses argon2
 
+	Timer ROWVERSION,
+
 	CONSTRAINT PK_UserCredential
 		PRIMARY KEY (UserCredentialID),
 
@@ -208,6 +197,8 @@ CREATE TABLE UserFollow
 	CreatedAt DATETIME
 		CONSTRAINT DF_UserFollow_CreatedAt DEFAULT GETDATE() NOT NULL,
 
+	Timer ROWVERSION,
+
 	CONSTRAINT PK_UserFollow
 		PRIMARY KEY (UserFollowID),
 
@@ -229,6 +220,67 @@ CREATE NONCLUSTERED INDEX IX_UserFollow_UserAccount_FollowingID
 CREATE NONCLUSTERED INDEX IX_UserFollow_FollowingID_UserAccount
 	ON UserFollow(FollowingID, UserAccountID);
 
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+CREATE TABLE Country
+(
+	CountryID UNIQUEIDENTIFIER
+		CONSTRAINT DF_CountryID DEFAULT NEWID(),
+
+	CountryName NVARCHAR(100) NOT NULL,
+
+	CountryCode CHAR(3) NOT NULL,
+
+	Timer ROWVERSION,
+
+	CONSTRAINT PK_Country
+		PRIMARY KEY (CountryID),
+);
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+CREATE TABLE StateProvince
+(
+	StateProvinceID UNIQUEIDENTIFIER
+		CONSTRAINT DF_StateProvinceID DEFAULT NEWID(),
+
+	StateProvinceName NVARCHAR(100) NOT NULL,
+
+	CountryID UNIQUEIDENTIFIER NOT NULL,
+
+	Timer ROWVERSION,
+
+	CONSTRAINT PK_StateProvince
+		PRIMARY KEY (StateProvinceID),
+
+	CONSTRAINT FK_StateProvince_Country
+		FOREIGN KEY (CountryID)
+		REFERENCES Country(CountryID)
+);
+
+
+----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
+CREATE TABLE City
+(
+	CityID UNIQUEIDENTIFIER
+		CONSTRAINT DF_CityID DEFAULT NEWID(),
+
+	CityName NVARCHAR(100) NOT NULL,
+
+	StateProvinceID UNIQUEIDENTIFIER NOT NULL,
+
+	Timer ROWVERSION,
+
+	CONSTRAINT PK_City
+		PRIMARY KEY (CityID),
+);
+
+
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 
@@ -246,6 +298,12 @@ CREATE TABLE BreweryPost -- A user cannot be deleted if they have a post
 
 	UpdatedAt DATETIME NULL,
 
+	Timer ROWVERSION,
+
+	CityID UNIQUEIDENTIFIER NOT NULL,
+
+	Coordinates GEOGRAPHY NOT NULL,
+
 	CONSTRAINT PK_BreweryPost 
 		PRIMARY KEY (BreweryPostID),
 
@@ -258,9 +316,9 @@ CREATE TABLE BreweryPost -- A user cannot be deleted if they have a post
 CREATE NONCLUSTERED INDEX IX_BreweryPost_PostedByID
 	ON BreweryPost(PostedByID);
 
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
 
+---------------------------------------------------------------------------
+----------------------------------------------------------------------------
 CREATE TABLE BreweryPostPhoto -- All photos linked to a post are deleted if the post is deleted
 (
 	BreweryPostPhotoID UNIQUEIDENTIFIER
@@ -272,6 +330,8 @@ CREATE TABLE BreweryPostPhoto -- All photos linked to a post are deleted if the 
 
 	LinkedAt DATETIME NOT NULL
 		CONSTRAINT DF_BreweryPostPhoto_LinkedAt DEFAULT GETDATE(),
+
+	Timer ROWVERSION,
 
 	CONSTRAINT PK_BreweryPostPhoto
 		PRIMARY KEY (BreweryPostPhotoID),
@@ -303,6 +363,8 @@ CREATE TABLE BeerStyle
 	StyleName NVARCHAR(100) NOT NULL,
 
 	Description NVARCHAR(MAX),
+
+	Timer ROWVERSION,
 
 	CONSTRAINT PK_BeerStyle
 		PRIMARY KEY (BeerStyleID),
@@ -339,6 +401,8 @@ CREATE TABLE BeerPost
 		CONSTRAINT DF_BeerPost_CreatedAt DEFAULT GETDATE(),
 
 	UpdatedAt DATETIME,
+
+	Timer ROWVERSION,
 
 	CONSTRAINT PK_BeerPost 
         PRIMARY KEY (BeerPostID),
@@ -386,6 +450,8 @@ CREATE TABLE BeerPostPhoto -- All photos linked to a beer post are deleted if th
 	LinkedAt DATETIME NOT NULL
 		CONSTRAINT DF_BeerPostPhoto_LinkedAt DEFAULT GETDATE(),
 
+	Timer ROWVERSION,
+
 	CONSTRAINT PK_BeerPostPhoto
 		PRIMARY KEY (BeerPostPhotoID),
 
@@ -409,10 +475,36 @@ ON BeerPostPhoto(BeerPostID, PhotoID);
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 
+CREATE TABLE BeerPostComment
+(
+	BeerPostCommentID UNIQUEIDENTIFIER
+		CONSTRAINT DF_BeerPostComment DEFAULT NEWID(),
+
+	Comment NVARCHAR(250) NOT NULL,
+
+	BeerPostID UNIQUEIDENTIFIER NOT NULL,
+
+	Rating INT NOT NULL,
+
+	Timer ROWVERSION,
+
+	CONSTRAINT PK_BeerPostComment
+       PRIMARY KEY (BeerPostCommentID),
+
+	CONSTRAINT FK_BeerPostComment_BeerPost
+	   FOREIGN KEY (BeerPostID) REFERENCES BeerPost(BeerPostID)
+)
+
+CREATE NONCLUSTERED INDEX IX_BeerPostComment_BeerPost
+	ON BeerPostComment(BeerPostID)
+
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
 /*
 
-Install-Package Microsoft.EntityFrameworkCore.SqlServer
-Install-Package Microsoft.EntityFrameworkCore.Tools
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+dotnet add package Microsoft.EntityFrameworkCore.Tools
 
-Scaffold-DbContext "Server=(localdb)\ProjectModels;Database=Biergarten;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer -Context BiergartenContext -UseDatabaseNames -Force
+Scaffold-DbContext "Data Source=AARONPC\INFO5052;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Database=Biergarten" Microsoft.EntityFrameworkCore.SqlServer -Context BiergartenContext -ContextDir "." -OutputDir "Entities" -UseDatabaseNames -Force
 */

@@ -1,7 +1,6 @@
 
 USE Biergarten;
 
--- User Account Variables (30 users)
 DECLARE
 @user1 UNIQUEIDENTIFIER = NEWID(),
 @user2 UNIQUEIDENTIFIER = NEWID(),
@@ -34,7 +33,6 @@ DECLARE
 @user29 UNIQUEIDENTIFIER = NEWID(),
 @user30 UNIQUEIDENTIFIER = NEWID(),
 
--- BeerStyle Variables (13 styles)
 @ipa UNIQUEIDENTIFIER = NEWID(),
 @stout UNIQUEIDENTIFIER = NEWID(),
 @lager UNIQUEIDENTIFIER = NEWID(),
@@ -49,7 +47,6 @@ DECLARE
 @brown UNIQUEIDENTIFIER = NEWID(),
 @barleywine UNIQUEIDENTIFIER = NEWID(),
 
--- Photo Variables (40 photos)
 @photo1 UNIQUEIDENTIFIER = NEWID(),
 @photo2 UNIQUEIDENTIFIER = NEWID(),
 @photo3 UNIQUEIDENTIFIER = NEWID(),
@@ -91,7 +88,6 @@ DECLARE
 @photo39 UNIQUEIDENTIFIER = NEWID(),
 @photo40 UNIQUEIDENTIFIER = NEWID(),
 
--- BreweryPost Variables (15 breweries)
 @brewery1 UNIQUEIDENTIFIER = NEWID(),
 @brewery2 UNIQUEIDENTIFIER = NEWID(),
 @brewery3 UNIQUEIDENTIFIER = NEWID(),
@@ -108,7 +104,6 @@ DECLARE
 @brewery14 UNIQUEIDENTIFIER = NEWID(),
 @brewery15 UNIQUEIDENTIFIER = NEWID(),
 
--- BeerPost Variables (28 beers)
 @beer1 UNIQUEIDENTIFIER = NEWID(),
 @beer2 UNIQUEIDENTIFIER = NEWID(),
 @beer3 UNIQUEIDENTIFIER = NEWID(),
@@ -138,57 +133,39 @@ DECLARE
 @beer27 UNIQUEIDENTIFIER = NEWID(),
 @beer28 UNIQUEIDENTIFIER = NEWID(),
 
--- Rating Variables (50 ratings)
-@rating1 UNIQUEIDENTIFIER = NEWID(),
-@rating2 UNIQUEIDENTIFIER = NEWID(),
-@rating3 UNIQUEIDENTIFIER = NEWID(),
-@rating4 UNIQUEIDENTIFIER = NEWID(),
-@rating5 UNIQUEIDENTIFIER = NEWID(),
-@rating6 UNIQUEIDENTIFIER = NEWID(),
-@rating7 UNIQUEIDENTIFIER = NEWID(),
-@rating8 UNIQUEIDENTIFIER = NEWID(),
-@rating9 UNIQUEIDENTIFIER = NEWID(),
-@rating10 UNIQUEIDENTIFIER = NEWID(),
-@rating11 UNIQUEIDENTIFIER = NEWID(),
-@rating12 UNIQUEIDENTIFIER = NEWID(),
-@rating13 UNIQUEIDENTIFIER = NEWID(),
-@rating14 UNIQUEIDENTIFIER = NEWID(),
-@rating15 UNIQUEIDENTIFIER = NEWID(),
-@rating16 UNIQUEIDENTIFIER = NEWID(),
-@rating17 UNIQUEIDENTIFIER = NEWID(),
-@rating18 UNIQUEIDENTIFIER = NEWID(),
-@rating19 UNIQUEIDENTIFIER = NEWID(),
-@rating20 UNIQUEIDENTIFIER = NEWID(),
-@rating21 UNIQUEIDENTIFIER = NEWID(),
-@rating22 UNIQUEIDENTIFIER = NEWID(),
-@rating23 UNIQUEIDENTIFIER = NEWID(),
-@rating24 UNIQUEIDENTIFIER = NEWID(),
-@rating25 UNIQUEIDENTIFIER = NEWID(),
-@rating26 UNIQUEIDENTIFIER = NEWID(),
-@rating27 UNIQUEIDENTIFIER = NEWID(),
-@rating28 UNIQUEIDENTIFIER = NEWID(),
-@rating29 UNIQUEIDENTIFIER = NEWID(),
-@rating30 UNIQUEIDENTIFIER = NEWID(),
-@rating31 UNIQUEIDENTIFIER = NEWID(),
-@rating32 UNIQUEIDENTIFIER = NEWID(),
-@rating33 UNIQUEIDENTIFIER = NEWID(),
-@rating34 UNIQUEIDENTIFIER = NEWID(),
-@rating35 UNIQUEIDENTIFIER = NEWID(),
-@rating36 UNIQUEIDENTIFIER = NEWID(),
-@rating37 UNIQUEIDENTIFIER = NEWID(),
-@rating38 UNIQUEIDENTIFIER = NEWID(),
-@rating39 UNIQUEIDENTIFIER = NEWID(),
-@rating40 UNIQUEIDENTIFIER = NEWID(),
-@rating41 UNIQUEIDENTIFIER = NEWID(),
-@rating42 UNIQUEIDENTIFIER = NEWID(),
-@rating43 UNIQUEIDENTIFIER = NEWID(),
-@rating44 UNIQUEIDENTIFIER = NEWID(),
-@rating45 UNIQUEIDENTIFIER = NEWID(),
-@rating46 UNIQUEIDENTIFIER = NEWID(),
-@rating47 UNIQUEIDENTIFIER = NEWID(),
-@rating48 UNIQUEIDENTIFIER = NEWID(),
-@rating49 UNIQUEIDENTIFIER = NEWID(),
-@rating50 UNIQUEIDENTIFIER = NEWID();
+@countryUSA UNIQUEIDENTIFIER = NEWID(),
+
+@stateOregon UNIQUEIDENTIFIER = NEWID(),
+@stateMichigan UNIQUEIDENTIFIER = NEWID(),
+@stateCalifornia UNIQUEIDENTIFIER = NEWID(),
+@stateColorado UNIQUEIDENTIFIER = NEWID(),
+@stateWashington UNIQUEIDENTIFIER = NEWID(),
+@stateIllinois UNIQUEIDENTIFIER = NEWID(),
+@stateNewYork UNIQUEIDENTIFIER = NEWID(),
+@stateTexas UNIQUEIDENTIFIER = NEWID(),
+@stateMassachusetts UNIQUEIDENTIFIER = NEWID(),
+@statePennsylvania UNIQUEIDENTIFIER = NEWID(),
+@stateNorthCarolina UNIQUEIDENTIFIER = NEWID(),
+@stateGeorgia UNIQUEIDENTIFIER = NEWID(),
+@stateOhio UNIQUEIDENTIFIER = NEWID(),
+@stateMissouri UNIQUEIDENTIFIER = NEWID(),
+@stateVirginia UNIQUEIDENTIFIER = NEWID(),
+
+@cityPortland UNIQUEIDENTIFIER = NEWID(),
+@cityGrandRapids UNIQUEIDENTIFIER = NEWID(),
+@citySanFrancisco UNIQUEIDENTIFIER = NEWID(),
+@cityDenver UNIQUEIDENTIFIER = NEWID(),
+@citySeattle UNIQUEIDENTIFIER = NEWID(),
+@cityChicago UNIQUEIDENTIFIER = NEWID(),
+@cityBrooklyn UNIQUEIDENTIFIER = NEWID(),
+@cityAustin UNIQUEIDENTIFIER = NEWID(),
+@cityBoston UNIQUEIDENTIFIER = NEWID(),
+@cityPhiladelphia UNIQUEIDENTIFIER = NEWID(),
+@cityAsheville UNIQUEIDENTIFIER = NEWID(),
+@cityAtlanta UNIQUEIDENTIFIER = NEWID(),
+@cityColumbus UNIQUEIDENTIFIER = NEWID(),
+@cityKansasCity UNIQUEIDENTIFIER = NEWID(),
+@cityRichmond UNIQUEIDENTIFIER = NEWID();
 
 ----------------------------------------------------------------------------
 -- UserAccount (30 users)
@@ -251,7 +228,6 @@ VALUES
     (@brown, 'Brown Ale', 'Malty beer with nutty, chocolate, and caramel notes.'),
     (@barleywine, 'Barleywine', 'Strong ale with intense malt flavors and high alcohol content.');
 COMMIT TRANSACTION;
-
 
 ----------------------------------------------------------------------------
 -- UserCredential (28 credentials)
@@ -439,28 +415,88 @@ VALUES
 COMMIT TRANSACTION;
 
 
+-- Country (1 country)
+----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO dbo.Country
+    (CountryID, CountryName, CountryCode)
+VALUES
+    (@countryUSA, 'United States', 'USA');
+COMMIT TRANSACTION;
+
+
+----------------------------------------------------------------------------
+-- StateProvince (15 states/provinces)
+----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO dbo.StateProvince
+    (StateProvinceID, StateProvinceName, CountryID)
+VALUES
+    (@stateOregon, 'Oregon', @countryUSA),
+    (@stateMichigan, 'Michigan', @countryUSA),
+    (@stateCalifornia, 'California', @countryUSA),
+    (@stateColorado, 'Colorado', @countryUSA),
+    (@stateWashington, 'Washington', @countryUSA),
+    (@stateIllinois, 'Illinois', @countryUSA),
+    (@stateNewYork, 'New York', @countryUSA),
+    (@stateTexas, 'Texas', @countryUSA),
+    (@stateMassachusetts, 'Massachusetts', @countryUSA),
+    (@statePennsylvania, 'Pennsylvania', @countryUSA),
+    (@stateNorthCarolina, 'North Carolina', @countryUSA),
+    (@stateGeorgia, 'Georgia', @countryUSA),
+    (@stateOhio, 'Ohio', @countryUSA),
+    (@stateMissouri, 'Missouri', @countryUSA),
+    (@stateVirginia, 'Virginia', @countryUSA);
+COMMIT TRANSACTION;
+
+
+----------------------------------------------------------------------------
+-- City (15 cities)
+----------------------------------------------------------------------------
+BEGIN TRANSACTION;
+INSERT INTO dbo.City
+    (CityID, CityName, StateProvinceID)
+VALUES
+    (@cityPortland, 'Portland', @stateOregon),
+    (@cityGrandRapids, 'Grand Rapids', @stateMichigan),
+    (@citySanFrancisco, 'San Francisco', @stateCalifornia),
+    (@cityDenver, 'Denver', @stateColorado),
+    (@citySeattle, 'Seattle', @stateWashington),
+    (@cityChicago, 'Chicago', @stateIllinois),
+    (@cityBrooklyn, 'Brooklyn', @stateNewYork),
+    (@cityAustin, 'Austin', @stateTexas),
+    (@cityBoston, 'Boston', @stateMassachusetts),
+    (@cityPhiladelphia, 'Philadelphia', @statePennsylvania),
+    (@cityAsheville, 'Asheville', @stateNorthCarolina),
+    (@cityAtlanta, 'Atlanta', @stateGeorgia),
+    (@cityColumbus, 'Columbus', @stateOhio),
+    (@cityKansasCity, 'Kansas City', @stateMissouri),
+    (@cityRichmond, 'Richmond', @stateVirginia);
+COMMIT TRANSACTION;
+
+
 ----------------------------------------------------------------------------
 -- BreweryPost (15 breweries)
 ----------------------------------------------------------------------------
 BEGIN TRANSACTION;
 INSERT INTO dbo.BreweryPost
-    (BreweryPostID, PostedByID, Description, CreatedAt)
+    (BreweryPostID, PostedByID, Description, CreatedAt, UpdatedAt, CityID, Coordinates)
 VALUES
-    (@brewery1, @user1, 'Hoppy Trails Brewery - Crafting exceptional IPAs since 2020. Located in the heart of Portland.', '2023-02-01'),
-    (@brewery2, @user2, 'Dark Horse Brewing Co. - Specializing in rich stouts and porters. Family owned and operated.', '2023-03-01'),
-    (@brewery3, @user3, 'Golden Gate Lager House - Traditional German-style lagers brewed with precision.', '2023-04-01'),
-    (@brewery4, @user5, 'Mountain View Ales - High-altitude brewing for unique flavor profiles.', '2023-05-15'),
-    (@brewery5, @user6, 'Coastal Wheat Works - Refreshing wheat beers perfect for any season.', '2023-06-20'),
-    (@brewery6, @user9, 'Riverside Porter Factory - Classic porters with a modern twist.', '2023-08-10'),
-    (@brewery7, @user11, 'Sunset Sour Cellars - Experimental sour ales aged in oak barrels.', '2024-01-20'),
-    (@brewery8, @user14, 'Urban Craft Collective - Community-focused brewery with rotating seasonal offerings.', '2024-05-10'),
-    (@brewery9, @user4, 'Belgian House - Authentic Belgian brewing traditions in the heart of the city.', '2024-06-01'),
-    (@brewery10, @user18, 'Amber Fields Brewery - Celebrating the richness of amber ales and maltier styles.', '2024-08-15'),
-    (@brewery11, @user20, 'Farmhouse Funk - Specializing in saisons and wild fermented ales.', '2024-09-20'),
-    (@brewery12, @user24, 'Brown Bear Brewing - Cozy taproom featuring award-winning brown ales.', '2025-01-10'),
-    (@brewery13, @user27, 'Vintage Vats - Small-batch barleywines and aged strong ales.', '2025-02-25'),
-    (@brewery14, @user12, 'Hop Haven - Experimental IPAs and cutting-edge hop varieties.', '2024-10-05'),
-    (@brewery15, @user8, 'Barrel & Grain - Farm-to-glass brewery using locally sourced ingredients.', '2024-04-20');
+    (@brewery1, @user1, 'Hoppy Trails Brewery - Crafting exceptional IPAs since 2020. Located in the heart of Portland.', '2023-02-01', NULL, @cityPortland, GEOGRAPHY::Point(45.5152, -122.6784, 4326)),
+    (@brewery2, @user2, 'Dark Horse Brewing Co. - Specializing in rich stouts and porters. Family owned and operated.', '2023-03-01', NULL, @cityGrandRapids, GEOGRAPHY::Point(42.9634, -85.6681, 4326)),
+    (@brewery3, @user3, 'Golden Gate Lager House - Traditional German-style lagers brewed with precision.', '2023-04-01', NULL, @citySanFrancisco, GEOGRAPHY::Point(37.7749, -122.4194, 4326)),
+    (@brewery4, @user5, 'Mountain View Ales - High-altitude brewing for unique flavor profiles.', '2023-05-15', NULL, @cityDenver, GEOGRAPHY::Point(39.7392, -104.9903, 4326)),
+    (@brewery5, @user6, 'Coastal Wheat Works - Refreshing wheat beers perfect for any season.', '2023-06-20', NULL, @citySeattle, GEOGRAPHY::Point(47.6062, -122.3321, 4326)),
+    (@brewery6, @user9, 'Riverside Porter Factory - Classic porters with a modern twist.', '2023-08-10', NULL, @cityChicago, GEOGRAPHY::Point(41.8781, -87.6298, 4326)),
+    (@brewery7, @user11, 'Sunset Sour Cellars - Experimental sour ales aged in oak barrels.', '2024-01-20', '2024-08-12', @cityBrooklyn, GEOGRAPHY::Point(40.6782, -73.9442, 4326)),
+    (@brewery8, @user14, 'Urban Craft Collective - Community-focused brewery with rotating seasonal offerings.', '2024-05-10', NULL, @cityAustin, GEOGRAPHY::Point(30.2672, -97.7431, 4326)),
+    (@brewery9, @user4, 'Belgian House - Authentic Belgian brewing traditions in the heart of the city.', '2024-06-01', NULL, @cityBoston, GEOGRAPHY::Point(42.3601, -71.0589, 4326)),
+    (@brewery10, @user18, 'Amber Fields Brewery - Celebrating the richness of amber ales and maltier styles.', '2024-08-15', NULL, @cityPhiladelphia, GEOGRAPHY::Point(39.9526, -75.1652, 4326)),
+    (@brewery11, @user20, 'Farmhouse Funk - Specializing in saisons and wild fermented ales.', '2024-09-20', NULL, @cityAsheville, GEOGRAPHY::Point(35.5951, -82.5515, 4326)),
+    (@brewery12, @user24, 'Brown Bear Brewing - Cozy taproom featuring award-winning brown ales.', '2025-01-10', NULL, @cityAtlanta, GEOGRAPHY::Point(33.7490, -84.3880, 4326)),
+    (@brewery13, @user27, 'Vintage Vats - Small-batch barleywines and aged strong ales.', '2025-02-25', NULL, @cityColumbus, GEOGRAPHY::Point(39.9612, -82.9988, 4326)),
+    (@brewery14, @user12, 'Hop Haven - Experimental IPAs and cutting-edge hop varieties.', '2024-10-05', NULL, @cityKansasCity, GEOGRAPHY::Point(39.0997, -94.5786, 4326)),
+    (@brewery15, @user8, 'Barrel & Grain - Farm-to-glass brewery using locally sourced ingredients.', '2024-04-20', NULL, @cityRichmond, GEOGRAPHY::Point(37.5407, -77.4360, 4326));
 COMMIT TRANSACTION;
 
 
@@ -553,134 +589,6 @@ VALUES
 COMMIT TRANSACTION;
 
 
-----------------------------------------------------------------------------
--- Rating (50 ratings)
-----------------------------------------------------------------------------
-BEGIN TRANSACTION;
-INSERT INTO dbo.Rating
-    (RatingID, Score, RatedByID)
-VALUES
-    (@rating1, 5, @user2),
-    (@rating2, 4, @user3),
-    (@rating3, 5, @user4),
-    (@rating4, 3, @user5),
-    (@rating5, 4, @user6),
-    (@rating6, 5, @user7),
-    (@rating7, 4, @user8),
-    (@rating8, 5, @user9),
-    (@rating9, 3, @user10),
-    (@rating10, 4, @user11),
-    (@rating11, 5, @user12),
-    (@rating12, 4, @user13),
-    (@rating13, 5, @user14),
-    (@rating14, 3, @user15),
-    (@rating15, 4, @user16),
-    (@rating16, 5, @user17),
-    (@rating17, 4, @user18),
-    (@rating18, 5, @user19),
-    (@rating19, 3, @user20),
-    (@rating20, 4, @user21),
-    (@rating21, 5, @user22),
-    (@rating22, 4, @user23),
-    (@rating23, 5, @user24),
-    (@rating24, 3, @user25),
-    (@rating25, 4, @user26),
-    (@rating26, 5, @user27),
-    (@rating27, 4, @user28),
-    (@rating28, 5, @user29),
-    (@rating29, 3, @user30),
-    (@rating30, 4, @user1),
-    (@rating31, 5, @user3),
-    (@rating32, 4, @user4),
-    (@rating33, 5, @user6),
-    (@rating34, 3, @user8),
-    (@rating35, 4, @user9),
-    (@rating36, 5, @user10),
-    (@rating37, 4, @user11),
-    (@rating38, 5, @user13),
-    (@rating39, 3, @user14),
-    (@rating40, 4, @user15),
-    (@rating41, 5, @user16),
-    (@rating42, 4, @user17),
-    (@rating43, 5, @user18),
-    (@rating44, 3, @user19),
-    (@rating45, 4, @user20),
-    (@rating46, 5, @user21),
-    (@rating47, 4, @user22),
-    (@rating48, 5, @user23),
-    (@rating49, 3, @user24),
-    (@rating50, 4, @user25);
-COMMIT TRANSACTION;
-
-
-----------------------------------------------------------------------------
--- BeerPostComment (30 beer comments)
-----------------------------------------------------------------------------
-BEGIN TRANSACTION;
-INSERT INTO dbo.BeerPostComment
-    (CommentText, PostedByID, RatingID)
-VALUES
-    ('This IPA is absolutely fantastic! Perfect balance of hops and malt.', @user2, @rating1),
-    ('Love the citrus notes in this beer. Will definitely buy again!', @user3, @rating2),
-    ('Rich and smooth stout. The chocolate flavor is amazing.', @user4, @rating3),
-    ('Good lager, very refreshing on a hot day.', @user5, @rating4),
-    ('Nice pale ale, but could use a bit more hop character.', @user6, @rating5),
-    ('Best wheat beer I''ve had in a while!', @user7, @rating6),
-    ('Solid porter with great roasted malt flavor.', @user8, @rating7),
-    ('This sour ale is perfectly tart and refreshing.', @user9, @rating8),
-    ('Decent pilsner, nothing special but drinkable.', @user10, @rating9),
-    ('The double IPA lives up to its name - super hoppy!', @user11, @rating10),
-    ('Vanilla porter is a unique and delicious combination.', @user12, @rating11),
-    ('Classic hefeweizen with authentic Bavarian character.', @user13, @rating12),
-    ('Belgian Bliss is truly blissful! Amazing complexity.', @user22, @rating21),
-    ('Copper Crown has the perfect amber color and taste.', @user23, @rating22),
-    ('This saison is incredibly refreshing and unique.', @user24, @rating23),
-    ('Barleywine is a bit too strong for my taste.', @user25, @rating24),
-    ('Love the citrus bomb! Perfect for IPA lovers.', @user26, @rating25),
-    ('Mosaic Dream lives up to its name - dreamy!', @user27, @rating26),
-    ('Farm fresh lager is exactly that - fresh and clean.', @user28, @rating27),
-    ('Midnight Express gives me the perfect coffee kick.', @user29, @rating28),
-    ('Harvest wheat is okay, but I prefer traditional wheats.', @user30, @rating29),
-    ('Cherry sunset sour is perfectly balanced.', @user1, @rating30),
-    ('Pacific Pale Ale brings back West Coast memories.', @user3, @rating31),
-    ('Bohemian Pilsner is as authentic as it gets.', @user4, @rating32),
-    ('Coffee porter is my new favorite breakfast beer!', @user6, @rating33),
-    ('Wild ferment is interesting but not for everyone.', @user8, @rating34),
-    ('Session IPA is perfect for summer afternoons.', @user9, @rating35),
-    ('Nutty brown ale has incredible depth of flavor.', @user10, @rating36),
-    ('Old Guardian is a masterpiece of brewing.', @user11, @rating37),
-    ('Imperial Stout deserves all the awards.', @user13, @rating38);
-COMMIT TRANSACTION;
-
-
-----------------------------------------------------------------------------
--- BreweryPostComment (20 brewery comments)
-----------------------------------------------------------------------------
-BEGIN TRANSACTION;
-INSERT INTO dbo.BreweryPostComment
-    (CommentText, PostedByID, RatingID)
-VALUES
-    ('Amazing brewery! The taproom has a great atmosphere.', @user14, @rating13),
-    ('Love supporting local breweries like this one.', @user15, @rating14),
-    ('Good selection of beers, but service could be better.', @user16, @rating15),
-    ('Best brewery in the area, hands down!', @user17, @rating16),
-    ('Nice facility and friendly staff. Will visit again.', @user18, @rating17),
-    ('Great variety of beer styles. Something for everyone.', @user19, @rating18),
-    ('Decent brewery but a bit pricey.', @user20, @rating19),
-    ('Fantastic sour beer selection! Worth the trip.', @user21, @rating20),
-    ('Belgian House has the most authentic Belgian beers outside Belgium!', @user14, @rating39),
-    ('Amber Fields creates consistently excellent amber ales.', @user15, @rating40),
-    ('Farmhouse Funk is a must-visit for sour beer enthusiasts.', @user16, @rating41),
-    ('Brown Bear Brewing has a cozy atmosphere and great beer.', @user17, @rating42),
-    ('Vintage Vats ages their beers to perfection.', @user18, @rating43),
-    ('Hop Haven is always pushing boundaries with new hops.', @user19, @rating44),
-    ('Barrel & Grain sources locally and it shows in quality.', @user20, @rating45),
-    ('Hoppy Trails never disappoints with their IPAs.', @user21, @rating46),
-    ('Dark Horse makes the best stouts in the region.', @user22, @rating47),
-    ('Golden Gate Lager House is my -to for crisp lagers.', @user23, @rating48),
-    ('Mountain View Ales has incredible views and incredible beer.', @user24, @rating49),
-    ('Coastal Wheat Works perfects the art of wheat beer.', @user25, @rating50);
-COMMIT TRANSACTION;
 
 
 ----------------------------------------------------------------------------
