@@ -164,7 +164,7 @@ CREATE TABLE UserCredential -- delete credentials when user account is deleted
 	Expiry DATETIME
 		CONSTRAINT DF_UserCredential_Expiry DEFAULT DATEADD(DAY, 90, GETDATE()) NOT NULL,
 
-	Hash NVARCHAR(100) NOT NULL,
+	Hash NVARCHAR(MAX) NOT NULL,
 	-- uses argon2
 
 	Timer ROWVERSION,
@@ -503,10 +503,10 @@ CREATE NONCLUSTERED INDEX IX_BeerPostComment_BeerPost
 -----------------------------------------------------------------------------
 -----------------------------------------------------------------------------
 
-/*
-
-dotnet add package Microsoft.EntityFrameworkCore.SqlServer
-dotnet add package Microsoft.EntityFrameworkCore.Tools
-
-Scaffold-DbContext "Data Source=AARONPC\INFO5052;Integrated Security=True;Persist Security Info=False;Pooling=False;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Database=Biergarten" Microsoft.EntityFrameworkCore.SqlServer -Context BiergartenContext -ContextDir "." -OutputDir "Entities" -UseDatabaseNames -Force
-*/
+USE Biergarten;
+SELECT *
+FROM UserAccount;
+SELECT *
+FROM UserCredential;
+SELECT *
+FROM UserVerification;

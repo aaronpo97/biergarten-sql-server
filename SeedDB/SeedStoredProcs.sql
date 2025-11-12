@@ -136,31 +136,38 @@ BEGIN
 END;
 GO
 
--- -- Stored procedure to insert Argon2 hashes
--- CREATE OR ALTER PROCEDURE dbo.USP_AddUserCredentials
---     (
---     @Hash dbo.TblUserHashes READONLY
--- )
--- AS
--- BEGIN
---     SET NOCOUNT ON;
---     SET XACT_ABORT ON;
+CREATE TYPE TblUserHashes AS TABLE
+(
+    UserAccountId UNIQUEIDENTIFIER NOT NULL,
+    Hash NVARCHAR(MAX) NOT NULL
+);
+GO
 
---     BEGIN TRANSACTION;
+-- Stored procedure to insert Argon2 hashes
+CREATE OR ALTER PROCEDURE dbo.USP_AddUserCredentials
+    (
+    @Hash dbo.TblUserHashes READONLY
+)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
 
---     INSERT INTO dbo.UserCredential
---         (UserAccountId, Hash)
---     SELECT
---         uah.UserAccountId,
---         uah.Hash
---     FROM @Hash AS uah;
+    BEGIN TRANSACTION;
 
---     COMMIT TRANSACTION;
--- END;
--- GO
+    INSERT INTO dbo.UserCredential
+        (UserAccountId, Hash)
+    SELECT
+        uah.UserAccountId,
+        uah.Hash
+    FROM @Hash AS uah;
+
+    COMMIT TRANSACTION;
+END;
+GO
 
 CREATE OR ALTER PROCEDURE dbo.USP_CreateUserVerification
-AS 
+AS
 BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
@@ -174,11 +181,13 @@ BEGIN
     FROM dbo.UserAccount AS ua
     WHERE NOT EXISTS
         (SELECT 1
-         FROM dbo.UserVerification AS uv
-         WHERE uv.UserAccountId = ua.UserAccountID);
+    FROM dbo.UserVerification AS uv
+    WHERE uv.UserAccountId = ua.UserAccountID);
 
 
-    IF (SELECT COUNT(*) FROM dbo.UserVerification) != (SELECT COUNT(*) FROM dbo.UserAccount)
+    IF (SELECT COUNT(*)
+    FROM dbo.UserVerification) != (SELECT COUNT(*)
+    FROM dbo.UserAccount)
     BEGIN
         RAISERROR('UserVerification count does not match UserAccount count after insertion.', 16, 1);
         ROLLBACK TRANSACTION;
@@ -187,24 +196,4 @@ BEGIN
 
     COMMIT TRANSACTION;
 END
-GO
-
-BEGIN TRY
-    EXEC dbo.USP_AddTestUsers;
-    PRINT 'AddTestUsers completed.';
-
-    EXEC dbo.USP_CreateUserVerification;
-    PRINT 'CreateUserVerification completed.';
-END TRY
-BEGIN CATCH
-    PRINT ERROR_MESSAGE();
-END CATCH
-GO
-
-
-SELECT *
-FROM dbo.UserAccount;
-
-SELECT *
-FROM dbo.UserVerification;
 GO
