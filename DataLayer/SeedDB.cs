@@ -4,8 +4,7 @@ using System.Text;
 using Konscious.Security.Cryptography;
 using Microsoft.Data.SqlClient;
 
-
-string  ConnectionString = Environment.GetEnvironmentVariable("SEEDDB_CONNECTION_STRING")!;
+string ConnectionString = Environment.GetEnvironmentVariable("SEEDDB_CONNECTION_STRING")!;
 
 static async Task BuildSchema(SqlConnection connection)
 {
