@@ -4,12 +4,8 @@ using System.Text;
 using Konscious.Security.Cryptography;
 using Microsoft.Data.SqlClient;
 
-// @todo store this securely using environment variables or a secret manager
-const string connectionString =
-    @"Data Source=AARONPC\INFO5052;Integrated Security=True;
-    Persist Security Info=False;Pooling=False;
-    MultipleActiveResultSets=False;Encrypt=True;
-    TrustServerCertificate=True;Connection Timeout=30;";
+
+string  ConnectionString = Environment.GetEnvironmentVariable("SEEDDB_CONNECTION_STRING")!;
 
 static async Task BuildSchema(SqlConnection connection)
 {
@@ -202,7 +198,7 @@ static string GetScriptPath(string fileName)
 
 try
 {
-    await using SqlConnection connection = new(connectionString);
+    await using SqlConnection connection = new(ConnectionString);
     await connection.OpenAsync();
     Console.WriteLine("Connection to database established successfully.");
 

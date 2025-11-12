@@ -1,6 +1,7 @@
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
     container_name: sqlserver
     environment:
       ACCEPT_EULA: "Y"
@@ -9,6 +10,37 @@ services:
       - "1433:1433"
     volumes:
       - sqlserverdata:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools18/bin/sqlcmd", "-C", "-S", "localhost", "-U", "sa", "-P", "YourStrong!Passw0rd", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    networks:
+      - devnet
+
+  dotnet:
+    image: mcr.microsoft.com/dotnet/sdk:9.0
+    container_name: dotnet-sdk
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./:/home/dev/projects # bind mount your repo for live code edits
+      - nuget-cache:/home/dev/.nuget/packages
+      - ~/.gitconfig:/home/dev/.gitconfig:ro
+    working_dir: /home/dev/projects
+    environment:
+      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+      HOME: /home/dev
+      USER: dev
+      SEEDDB_CONNECTION_STRING: "Server=sqlserver,1433;User Id=sa;Password=YourStrong!Passw0rd;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+    user: root
+    networks:
+      - devnet
 
 volumes:
   sqlserverdata:
+  nuget-cache:
+
+networks:
+  devnet:
+    driver: bridge
