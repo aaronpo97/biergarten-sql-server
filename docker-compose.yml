@@ -24,7 +24,7 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - ./:/home/dev/projects # bind mount your repo for live code edits
+      - ./:/home/dev/projects
       - nuget-cache:/home/dev/.nuget/packages
       - ~/.gitconfig:/home/dev/.gitconfig:ro
     working_dir: /home/dev/projects
@@ -32,7 +32,7 @@ services:
       DOTNET_CLI_TELEMETRY_OPTOUT: "1"
       HOME: /home/dev
       USER: dev
-      SEEDDB_CONNECTION_STRING: "Server=sqlserver,1433;User Id=sa;Password=YourStrong!Passw0rd;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
+      DB_CONNECTION_STRING: "Server=sqlserver,1433;User Id=sa;Password=YourStrong!Passw0rd;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;"
     user: root
     networks:
       - devnet

@@ -4,7 +4,9 @@ using System.Text;
 using Konscious.Security.Cryptography;
 using Microsoft.Data.SqlClient;
 
-string ConnectionString = Environment.GetEnvironmentVariable("SEEDDB_CONNECTION_STRING")!;
+string ConnectionString = Environment.GetEnvironmentVariable(
+    "DB_CONNECTION_STRING"
+)!;
 
 static async Task BuildSchema(SqlConnection connection)
 {
@@ -13,13 +15,61 @@ static async Task BuildSchema(SqlConnection connection)
     Console.WriteLine("Database schema created or updated successfully.");
 }
 
-static async Task AddStoredProcs(SqlConnection connection)
+static async Task AddStoredProcsAndFunctions(SqlConnection connection)
 {
-    string sql = await File.ReadAllTextAsync(
-        GetScriptPath("SeedStoredProcs.sql")
+    // New approach: load functions first, then procedures, from dedicated folders.
+    // Fallback to legacy combined file if folders are missing.
+    string projectRoot = Path.GetFullPath(
+        Path.Combine(AppContext.BaseDirectory, "..", "..", "..")
     );
-    await ExecuteScriptAsync(connection, sql);
-    Console.WriteLine("Stored procedures added or updated successfully.");
+
+    string functionsDir = Path.Combine(projectRoot, "seed", "functions");
+    string proceduresDir = Path.Combine(projectRoot, "seed", "procedures");
+
+    if (Directory.Exists(functionsDir))
+    {
+        foreach (
+            string file in Directory
+                .EnumerateFiles(
+                    functionsDir,
+                    "*.sql",
+                    SearchOption.TopDirectoryOnly
+                )
+                .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+        )
+        {
+            string sql = await File.ReadAllTextAsync(file);
+            await ExecuteScriptAsync(connection, sql);
+            Console.WriteLine(
+                $"Executed function script: {Path.GetFileName(file)}"
+            );
+        }
+    }
+
+    if (Directory.Exists(proceduresDir))
+    {
+        foreach (
+            string file in Directory
+                .EnumerateFiles(
+                    proceduresDir,
+                    "*.sql",
+                    SearchOption.TopDirectoryOnly
+                )
+                .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+        )
+        {
+            string sql = await File.ReadAllTextAsync(file);
+            await ExecuteScriptAsync(connection, sql);
+            Console.WriteLine(
+                $"Executed procedure script: {Path.GetFileName(file)}"
+            );
+        }
+    }
+
+    Console.WriteLine(
+        "Functions and stored procedures added or updated successfully."
+    );
+    return;
 }
 
 static async Task RunSeedAsync(SqlConnection connection)
@@ -202,7 +252,7 @@ try
     Console.WriteLine("Connection to database established successfully.");
 
     await BuildSchema(connection);
-    await AddStoredProcs(connection);
+    await AddStoredProcsAndFunctions(connection);
     await RunSeedAsync(connection);
     Console.WriteLine("Seeding complete.");
 }
