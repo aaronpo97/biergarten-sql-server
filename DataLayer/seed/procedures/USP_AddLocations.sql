@@ -13,11 +13,11 @@ BEGIN
         Countries(CountryName, Alpha2)
         AS
         (
-                                        SELECT 'Canada', 'CA'
-            UNION ALL
-                SELECT 'Mexico', 'MX'
-            UNION ALL
-                SELECT 'United States', 'US'
+            SELECT 'Canada', 'CA' 
+            UNION ALL 
+            SELECT 'Mexico', 'MX'
+            UNION ALL 
+            SELECT 'United States', 'US'
         )
     INSERT INTO dbo.Country
         (CountryName, ISO3616_1)
