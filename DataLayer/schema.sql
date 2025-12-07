@@ -22,7 +22,7 @@ USE Biergarten;
 ----------------------------------------------------------------------------
 ----------------------------------------------------------------------------
 
-CREATE TABLE UserAccount
+CREATE TABLE dbo.UserAccount
 (
     UserAccountID UNIQUEIDENTIFIER
         CONSTRAINT DF_UserAccountID	DEFAULT NEWID(),
