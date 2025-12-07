@@ -21,8 +21,7 @@ namespace DataAccessLayer
 
            
         }
-
-
+        
         public void Add(UserAccount userAccount)
         {
             const string query =

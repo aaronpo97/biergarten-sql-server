@@ -428,3 +428,6 @@ FodyWeavers.xsd
 *.msp
 
 .DS_Store
+
+*/data_source/other
+.fake
