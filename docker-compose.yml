@@ -17,40 +17,6 @@ services:
       retries: 12
     networks:
       - devnet
-
-  redis:
-    image: redis:7
-    container_name: redis
-    env_file:
-      - .env
-    networks:
-      - devnet
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  dotnet:
-    image: mcr.microsoft.com/dotnet/sdk:10.0
-    container_name: dotnet-sdk
-    tty: true
-    stdin_open: true
-    volumes:
-      - ./:/home/dev/projects
-      - nuget-cache:/home/dev/.nuget/packages
-      - ~/.gitconfig:/home/dev/.gitconfig:ro
-    working_dir: /home/dev/projects
-    environment:
-      DOTNET_CLI_TELEMETRY_OPTOUT: "1"
-      HOME: /home/dev
-      USER: dev
-      DB_CONNECTION_STRING: "Server=sqlserver,1433;User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;Database=${DB_NAME};"
-      REDIS_URL: "${REDIS_URL}"
-    user: root
-    networks:
-      - devnet
-
 volumes:
   sqlserverdata:
   nuget-cache:

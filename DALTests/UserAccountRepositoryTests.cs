@@ -9,7 +9,7 @@ namespace DALTests
 {
     public class UserAccountRepositoryTests
     {
-        private readonly UserAccountRepository _repository;
+        private readonly IUserAccountRepository _repository;
 
         public UserAccountRepositoryTests()
         {

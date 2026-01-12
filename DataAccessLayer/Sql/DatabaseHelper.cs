@@ -2,7 +2,7 @@
 using System.Data;
 using Microsoft.Data.SqlClient;
 
-namespace DataAccessLayer
+namespace DataAccessLayer.Sql
 {
     public class DatabaseHelper
     {
