@@ -4,6 +4,7 @@ using System.Text;
 using Konscious.Security.Cryptography;
 using Microsoft.Data.SqlClient;
 
+
 string ConnectionString = Environment.GetEnvironmentVariable(
     "DB_CONNECTION_STRING"
 )!;
@@ -17,14 +18,15 @@ static async Task BuildSchema(SqlConnection connection)
 
 static async Task AddStoredProcsAndFunctions(SqlConnection connection)
 {
-    // New approach: load functions first, then procedures, from dedicated folders.
-    // Fallback to legacy combined file if folders are missing.
     string projectRoot = Path.GetFullPath(
         Path.Combine(AppContext.BaseDirectory, "..", "..", "..")
     );
 
     string functionsDir = Path.Combine(projectRoot, "seed", "functions");
     string proceduresDir = Path.Combine(projectRoot, "seed", "procedures");
+    string crudDir = Path.GetFullPath(
+        Path.Combine(projectRoot, "..", "DataAccessLayer", "Sql", "crud")
+    );
 
     if (Directory.Exists(functionsDir))
     {
@@ -62,6 +64,26 @@ static async Task AddStoredProcsAndFunctions(SqlConnection connection)
             await ExecuteScriptAsync(connection, sql);
             Console.WriteLine(
                 $"Executed procedure script: {Path.GetFileName(file)}"
+            );
+        }
+    }
+
+    if (Directory.Exists(crudDir))
+    {
+        foreach (
+            string file in Directory
+                .EnumerateFiles(
+                    crudDir,
+                    "*.sql",
+                    SearchOption.TopDirectoryOnly
+                )
+                .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+        )
+        {
+            string sql = await File.ReadAllTextAsync(file);
+            await ExecuteScriptAsync(connection, sql);
+            Console.WriteLine(
+                $"Executed CRUD script: {Path.GetFileName(file)}"
             );
         }
     }
