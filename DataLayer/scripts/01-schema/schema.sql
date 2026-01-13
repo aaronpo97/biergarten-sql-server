@@ -1,20 +1,20 @@
 -- ----------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------
+/*
+USE master;
 
--- USE master;
+IF EXISTS (SELECT name
+FROM sys.databases
+WHERE name = N'Biergarten')
+BEGIN
+    ALTER DATABASE Biergarten SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+END
 
--- IF EXISTS (SELECT name
--- FROM sys.databases
--- WHERE name = N'Biergarten')
--- BEGIN
---     ALTER DATABASE Biergarten SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
--- END
+DROP DATABASE IF EXISTS Biergarten;
 
--- DROP DATABASE IF EXISTS Biergarten;
+CREATE DATABASE Biergarten;
 
--- CREATE DATABASE Biergarten;
-
-
+*/
 -- ----------------------------------------------------------------------------
 -- ----------------------------------------------------------------------------
 

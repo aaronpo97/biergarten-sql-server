@@ -1,6 +1,8 @@
 ﻿using System.Data;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using DbUp;
 using idunno.Password;
 using Konscious.Security.Cryptography;
 using Microsoft.Data.SqlClient;
@@ -123,3 +125,33 @@ static async Task RunSeedAsync(SqlConnection connection)
     await ExecuteCredentialProcedureAsync(connection, credentialRows);
     Console.WriteLine($"Generated {credentialRows.Rows.Count} credential hashes.");
 }
+
+
+
+// Get connection string from environment variable
+    var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+
+    var upgrader =
+        DeployChanges.To
+            .SqlDatabase(connectionString)
+            .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly())
+            .LogToConsole()
+            .Build();
+
+    var result = upgrader.PerformUpgrade();
+
+    if (!result.Successful)
+    {
+        Console.ForegroundColor = ConsoleColor.Red;
+        Console.WriteLine(result.Error);
+        Console.ResetColor();
+#if DEBUG
+        Console.ReadLine();
+#endif                
+        return -1;
+    }
+
+    Console.ForegroundColor = ConsoleColor.Green;
+    Console.WriteLine("Success!");
+    Console.ResetColor();
+    return 0;

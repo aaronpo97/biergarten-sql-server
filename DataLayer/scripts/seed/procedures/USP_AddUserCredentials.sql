@@ -1,3 +1,4 @@
+-- Stored procedure to insert Argon2 hashes
 CREATE OR ALTER PROCEDURE dbo.USP_AddUserCredentials
 (
     @Hash dbo.TblUserHashes READONLY
@@ -18,3 +19,4 @@ BEGIN
 
     COMMIT TRANSACTION;
 END;
+GO
