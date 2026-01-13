@@ -1,6 +1,3 @@
-USE Biergarten;
-GO
-
 CREATE OR ALTER FUNCTION dbo.UDF_GetCountryIdByCode
 (
     @CountryCode NVARCHAR(2)
@@ -16,4 +13,3 @@ BEGIN
 
     RETURN @CountryId;
 END;
-GO

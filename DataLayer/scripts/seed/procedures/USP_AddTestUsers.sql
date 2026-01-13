@@ -1,6 +1,3 @@
-USE Biergarten;
-GO
-
 CREATE OR ALTER PROCEDURE dbo.USP_AddTestUsers
 AS
 BEGIN
@@ -133,4 +130,3 @@ BEGIN
 
     COMMIT TRANSACTION;
 END;
-GO

@@ -1,6 +1,3 @@
-USE Biergarten;
-GO
-
 CREATE OR ALTER PROCEDURE dbo.USP_AddLocations
 AS
 BEGIN
@@ -501,4 +498,3 @@ BEGIN
 
     COMMIT TRANSACTION;
 END;
-GO

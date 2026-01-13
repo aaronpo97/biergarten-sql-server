@@ -1,26 +1,22 @@
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------
 
-USE master;
+-- USE master;
 
-IF EXISTS (SELECT name
-FROM sys.databases
-WHERE name = N'Biergarten')
-BEGIN
-    ALTER DATABASE Biergarten SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-END
-GO
+-- IF EXISTS (SELECT name
+-- FROM sys.databases
+-- WHERE name = N'Biergarten')
+-- BEGIN
+--     ALTER DATABASE Biergarten SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+-- END
 
-DROP DATABASE IF EXISTS Biergarten;
-GO
+-- DROP DATABASE IF EXISTS Biergarten;
 
-CREATE DATABASE Biergarten;
-GO
+-- CREATE DATABASE Biergarten;
 
-USE Biergarten;
 
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------
+-- ----------------------------------------------------------------------------
 
 CREATE TABLE dbo.UserAccount
 (
@@ -553,6 +549,3 @@ CREATE TABLE BeerPostComment
 CREATE NONCLUSTERED INDEX IX_BeerPostComment_BeerPost
     ON BeerPostComment(BeerPostID)
 
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
--- EOF

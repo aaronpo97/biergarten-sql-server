@@ -1,6 +1,3 @@
-USE Biergarten;
-GO
-
 CREATE OR ALTER FUNCTION dbo.UDF_GetStateProvinceIdByCode
 (
     @StateProvinceCode NVARCHAR(6)
@@ -14,4 +11,3 @@ BEGIN
     WHERE ISO3616_2 = @StateProvinceCode;
     RETURN @StateProvinceId;
 END;
-GO

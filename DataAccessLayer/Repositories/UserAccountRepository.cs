@@ -66,14 +66,46 @@ namespace DataAccessLayer
             command.ExecuteNonQuery();
         }
 
-        public IEnumerable<UserAccount> GetAll()
+        public IEnumerable<UserAccount> GetAll(int? limit, int? offset)
         {
+            if (limit.HasValue && limit <= 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(limit),
+                    "Limit must be greater than zero."
+                );
+            }
+
+            if (offset < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(offset),
+                    "Offset cannot be negative."
+                );
+            }
+
+            if (offset.HasValue && !limit.HasValue)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(offset),
+                    "Offset cannot be provided without a limit."
+                );
+            }
+
             using SqlConnection connection = new(_connectionString);
             using SqlCommand command = new(
                 "usp_GetAllUserAccounts",
                 connection
             );
             command.CommandType = System.Data.CommandType.StoredProcedure;
+            if (limit.HasValue)
+            {
+                command.Parameters.AddWithValue("@Limit", limit.Value);
+            }
+            if (offset.HasValue)
+            {
+                command.Parameters.AddWithValue("@Offset", offset.Value);
+            }
             connection.Open();
 
             using SqlDataReader reader = command.ExecuteReader();

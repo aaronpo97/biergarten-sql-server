@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
 using DataAccessLayer.Entities;
 
-namespace DataAccessLayer
+namespace BusinessLayer.Services
 {
-    public interface IUserAccountRepository : IRepository<UserAccount>
+    public interface IUserService : IService<UserAccount>
     {
         UserAccount? GetByUsername(string username);
         UserAccount? GetByEmail(string email);

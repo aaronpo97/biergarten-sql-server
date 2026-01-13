@@ -1,6 +1,3 @@
-USE Biergarten;
-GO
-
 CREATE OR ALTER PROCEDURE dbo.USP_CreateUserVerification
 AS
 BEGIN
@@ -32,4 +29,3 @@ BEGIN
 
     COMMIT TRANSACTION;
 END
-GO

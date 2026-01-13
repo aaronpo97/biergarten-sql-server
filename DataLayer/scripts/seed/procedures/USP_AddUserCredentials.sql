@@ -1,17 +1,5 @@
-USE Biergarten;
-GO
-
-IF TYPE_ID(N'dbo.TblUserHashes') IS NULL
-    EXEC('CREATE TYPE dbo.TblUserHashes AS TABLE
-          (
-              UserAccountId UNIQUEIDENTIFIER NOT NULL,
-              Hash NVARCHAR(MAX) NOT NULL
-          );');
-GO
-
--- Stored procedure to insert Argon2 hashes
 CREATE OR ALTER PROCEDURE dbo.USP_AddUserCredentials
-    (
+(
     @Hash dbo.TblUserHashes READONLY
 )
 AS
@@ -30,4 +18,3 @@ BEGIN
 
     COMMIT TRANSACTION;
 END;
-GO

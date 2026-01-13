@@ -32,14 +32,14 @@ The repositories are currently responsible for:
 ## Database schema and seed
 
 - `DataLayer/schema.sql` contains the database schema definitions.
-- `DataLayer/seed/SeedDB.cs` provides seeding and stored procedure/function loading.
-- Stored procedure scripts are organized under `DataAccessLayer/Sql/crud/` (UserAccount and related).
+- `DataLayer/database/` holds application functions and CRUD procedures.
+- `DataLayer/seed/` holds seed-only procedures and the `SeedDB.cs` entry point.
+- `SeedDB.cs` honors `SEED_MODE` (`database`, `seed`, or `all`) to control which scripts run.
 
 ## Key conventions
 
 - **Environment variables**: `DB_CONNECTION_STRING` is required for DAL and seed tooling.
 - **Stored procedures**: CRUD operations use `usp_*` procedures.
-- **Rowversion** columns are represented as `byte[]` in entities (e.g., `Timer`).
 
 ## Suggested dependency direction
 

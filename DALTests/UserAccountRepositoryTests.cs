@@ -144,11 +144,72 @@ namespace DALTests
             _repository.Add(user2);
 
             // Act
-            var allUsers = _repository.GetAll();
+            var allUsers = _repository.GetAll(null, null);
 
             // Assert
             Assert.NotNull(allUsers);
             Assert.True(allUsers.Count() >= 2);
+        }
+
+        [Fact]
+        public void GetAll_WithPagination_ShouldRespectLimit()
+        {
+            // Arrange
+            var users = new List<UserAccount>
+            {
+                new UserAccount
+                {
+                    UserAccountID = Guid.NewGuid(),
+                    Username = $"pageuser_{Guid.NewGuid():N}",
+                    FirstName = "Page",
+                    LastName = "User",
+                    Email = $"pageuser_{Guid.NewGuid():N}@example.com",
+                    CreatedAt = DateTime.UtcNow,
+                    DateOfBirth = new DateTime(1991, 4, 4),
+                },
+                new UserAccount
+                {
+                    UserAccountID = Guid.NewGuid(),
+                    Username = $"pageuser_{Guid.NewGuid():N}",
+                    FirstName = "Page",
+                    LastName = "User",
+                    Email = $"pageuser_{Guid.NewGuid():N}@example.com",
+                    CreatedAt = DateTime.UtcNow,
+                    DateOfBirth = new DateTime(1992, 5, 5),
+                },
+                new UserAccount
+                {
+                    UserAccountID = Guid.NewGuid(),
+                    Username = $"pageuser_{Guid.NewGuid():N}",
+                    FirstName = "Page",
+                    LastName = "User",
+                    Email = $"pageuser_{Guid.NewGuid():N}@example.com",
+                    CreatedAt = DateTime.UtcNow,
+                    DateOfBirth = new DateTime(1993, 6, 6),
+                }
+            };
+
+            foreach (var user in users)
+            {
+                _repository.Add(user);
+            }
+
+            // Act
+            var page = _repository.GetAll(2, 0).ToList();
+
+            // Assert
+            Assert.Equal(2, page.Count);
+        }
+
+        [Fact]
+        public void GetAll_WithPagination_ShouldValidateArguments()
+        {
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => _repository.GetAll(0, 0).ToList()
+            );
+            Assert.Throws<ArgumentOutOfRangeException>(
+                () => _repository.GetAll(1, -1).ToList()
+            );
         }
     }
 }

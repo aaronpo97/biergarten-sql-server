@@ -1,5 +1,5 @@
-using DataAccessLayer;
 using DataAccessLayer.Entities;
+using BusinessLayer.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -8,40 +8,57 @@ namespace WebAPI.Controllers
     [Route("api/users")]
     public class UsersController : ControllerBase
     {
-        private readonly IUserAccountRepository _userAccountRepository;
+        private readonly IUserService _userService;
 
-        public UsersController()
+        public UsersController(IUserService userService)
         {
-            _userAccountRepository = new UserAccountRepository();
+            _userService = userService;
         }
 
         // all users
         [HttpGet]
-        [HttpGet("users")]
-        public IActionResult GetAllUsers()
+        public IActionResult GetAllUsers(
+            [FromQuery] int? limit,
+            [FromQuery] int? offset
+        )
         {
-            var users = _userAccountRepository.GetAll();
+            if (offset.HasValue && !limit.HasValue)
+            {
+                return BadRequest("Limit is required when offset is provided.");
+            }
+
+            if (limit.HasValue && limit <= 0)
+            {
+                return BadRequest("Limit must be greater than zero.");
+            }
+
+            if (offset.HasValue && offset < 0)
+            {
+                return BadRequest("Offset cannot be negative.");
+            }
+
+            var users = _userService.GetAll(limit, offset);
             return Ok(users);
         }
 
         [HttpGet("{id:guid}")]
         public IActionResult GetUserById(Guid id)
         {
-            var user = _userAccountRepository.GetById(id);
+            var user = _userService.GetById(id);
             return user is null ? NotFound() : Ok(user);
         }
 
-        [HttpGet("by-username/{username}")]
+        [HttpGet("username/{username}")]
         public IActionResult GetUserByUsername(string username)
         {
-            var user = _userAccountRepository.GetByUsername(username);
+            var user = _userService.GetByUsername(username);
             return user is null ? NotFound() : Ok(user);
         }
 
-        [HttpGet("by-email/{email}")]
+        [HttpGet("email/{email}")]
         public IActionResult GetUserByEmail(string email)
         {
-            var user = _userAccountRepository.GetByEmail(email);
+            var user = _userService.GetByEmail(email);
             return user is null ? NotFound() : Ok(user);
         }
 
@@ -53,7 +70,7 @@ namespace WebAPI.Controllers
                 userAccount.UserAccountID = Guid.NewGuid();
             }
 
-            _userAccountRepository.Add(userAccount);
+            _userService.Add(userAccount);
             return CreatedAtAction(
                 nameof(GetUserById),
                 new { id = userAccount.UserAccountID },
@@ -70,14 +87,14 @@ namespace WebAPI.Controllers
             }
 
             userAccount.UserAccountID = id;
-            _userAccountRepository.Update(userAccount);
+            _userService.Update(userAccount);
             return NoContent();
         }
 
         [HttpDelete("{id:guid}")]
         public IActionResult DeleteUser(Guid id)
         {
-            _userAccountRepository.Delete(id);
+            _userService.Delete(id);
             return NoContent();
         }
     }
