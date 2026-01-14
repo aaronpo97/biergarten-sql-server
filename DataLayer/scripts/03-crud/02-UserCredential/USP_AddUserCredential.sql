@@ -9,6 +9,21 @@ BEGIN
 
     BEGIN TRANSACTION;
 
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM dbo.UserAccount 
+        WHERE UserAccountID = @UserAccountId
+    )
+        THROW 50001, 'UserAccountID does not exist.', 1;
+    
+    IF EXISTS (
+        SELECT 1 
+        FROM dbo.UserCredential
+        WHERE UserAccountID = @UserAccountId
+    )
+        THROW 50002, 'UserCredential for this UserAccountID already exists.', 1;
+    
+
     INSERT INTO dbo.UserCredential
         (UserAccountId, Hash)
     VALUES 
