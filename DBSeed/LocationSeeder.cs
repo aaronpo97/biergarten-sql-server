@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 
 namespace DBSeed;
 
-internal static class LocationSeeder
+class LocationSeeder : ISeeder
 {
     private static readonly IReadOnlyList<(
         string CountryName,
@@ -244,7 +244,7 @@ internal static class LocationSeeder
         ("MX-ZAC", "Zacatecas"),
     ];
 
-    internal static async Task SeedAsync(SqlConnection connection)
+    public async Task SeedAsync(SqlConnection connection)
     {
         foreach (var (countryName, countryCode) in Countries)
         {

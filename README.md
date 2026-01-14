@@ -5,10 +5,10 @@ This solution is a monolith-oriented Web API with a layered structure. The curre
 ## High-level projects
 
 - `WebAPI/` - ASP.NET Core API endpoints (controllers) and application entrypoint.
-- `BusinessLayer/` - Intended home for domain/business logic (currently minimal).
+- `BusinessLayer/` - Intended home for domain/business logic
 - `DataAccessLayer/` - Repository implementations, entities (POCOs), and SQL helpers.
-- `DataLayer/` - Database schema, seed scripts, and data sources.
-- `WebCrawler/` - Separate crawler executable.
+- `DataLayer/` - DbUp console app that applies embedded schema/functions/procedures.
+- `DBSeed/` - Console app for seeding locations and test user data.
 - `DALTests/` - Data access tests.
 
 ## Data access architecture
@@ -16,12 +16,12 @@ This solution is a monolith-oriented Web API with a layered structure. The curre
 - **Entities (POCOs)** live in `DataAccessLayer/Entities/`.
 - **Repositories** live in `DataAccessLayer/Repositories/` and implement interfaces like `IUserAccountRepository`.
 - **SQL execution** lives in `DataAccessLayer/Sql/`.
-- **Stored procedures** for CRUD live under `DataAccessLayer/Sql/crud/` and are invoked by repositories.
+- **Stored procedures** for CRUD live under `DataLayer/scripts/03-crud/` and are invoked by repositories.
 
 Example flow:
 
 ```
-WebAPI Controller -> IUserAccountRepository -> UserAccountRepository -> stored procedure
+WebAPI Controller -> UserService -> UserAccountRepository -> stored procedure
 ```
 
 The repositories are currently responsible for:
@@ -29,12 +29,13 @@ The repositories are currently responsible for:
 - Executing stored procedures
 - Mapping result sets to POCOs
 
-## Database schema and seed
+## Database schema and seed tooling
 
-- `DataLayer/schema.sql` contains the database schema definitions.
-- `DataLayer/database/` holds application functions and CRUD procedures.
-- `DataLayer/seed/` holds seed-only procedures and the `SeedDB.cs` entry point.
-- `SeedDB.cs` honors `SEED_MODE` (`database`, `seed`, or `all`) to control which scripts run.
+- `DataLayer/scripts/01-schema/schema.sql` contains the database schema definitions.
+- `DataLayer/scripts/02-functions/` holds application functions.
+- `DataLayer/scripts/03-crud/` holds CRUD stored procedures.
+- `DataLayer/Program.cs` runs DbUp to apply embedded scripts to the database.
+- `DBSeed/Program.cs` runs the location and user seeders using `DB_CONNECTION_STRING`.
 
 ## Key conventions
 

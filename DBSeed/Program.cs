@@ -16,11 +16,18 @@ try
 
     Console.WriteLine("Connected to database.");
 
-    await LocationSeeder.SeedAsync(connection);
-    Console.WriteLine("Seeded locations.");
+    ISeeder[] seeders =
+    [
+        new LocationSeeder(),
+        new UserSeeder(),
+    ];
 
-    await UserSeeder.SeedAsync(connection);
-    Console.WriteLine("Seeded users.");
+    foreach (var seeder in seeders)
+    {
+        Console.WriteLine($"Seeding {seeder.GetType().Name}...");
+        await seeder.SeedAsync(connection);
+        Console.WriteLine($"{seeder.GetType().Name} seeded.");
+    }
 
     Console.WriteLine("Seed completed successfully.");
     return 0;
