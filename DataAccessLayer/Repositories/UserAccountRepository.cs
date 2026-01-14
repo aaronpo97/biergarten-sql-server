@@ -8,6 +8,7 @@ namespace DataAccessLayer
     public class UserAccountRepository : IUserAccountRepository
     {
         private readonly string _connectionString;
+
         public UserAccountRepository()
         {
             // Retrieve the connection string from environment variables
@@ -56,10 +57,7 @@ namespace DataAccessLayer
         public void Delete(Guid id)
         {
             using SqlConnection connection = new(_connectionString);
-            using SqlCommand command = new(
-                "usp_DeleteUserAccount",
-                connection
-            );
+            using SqlCommand command = new("usp_DeleteUserAccount", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
             command.Parameters.AddWithValue("@UserAccountId", id);
             connection.Open();
@@ -158,10 +156,16 @@ namespace DataAccessLayer
                 userAccount.UserAccountID
             );
             command.Parameters.AddWithValue("@Username", userAccount.Username);
-            command.Parameters.AddWithValue("@FirstName", userAccount.FirstName);
+            command.Parameters.AddWithValue(
+                "@FirstName",
+                userAccount.FirstName
+            );
             command.Parameters.AddWithValue("@LastName", userAccount.LastName);
             command.Parameters.AddWithValue("@Email", userAccount.Email);
-            command.Parameters.AddWithValue("@DateOfBirth", userAccount.DateOfBirth);
+            command.Parameters.AddWithValue(
+                "@DateOfBirth",
+                userAccount.DateOfBirth
+            );
         }
 
         private static void AddUserAccountUpdateParameters(

@@ -1,5 +1,5 @@
-using DataAccessLayer.Entities;
 using BusinessLayer.Services;
+using DataAccessLayer.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -79,9 +79,15 @@ namespace WebAPI.Controllers
         }
 
         [HttpPut("{id:guid}")]
-        public IActionResult UpdateUser(Guid id, [FromBody] UserAccount userAccount)
+        public IActionResult UpdateUser(
+            Guid id,
+            [FromBody] UserAccount userAccount
+        )
         {
-            if (userAccount.UserAccountID != Guid.Empty && userAccount.UserAccountID != id)
+            if (
+                userAccount.UserAccountID != Guid.Empty
+                && userAccount.UserAccountID != id
+            )
             {
                 return BadRequest("UserAccountID does not match route id.");
             }

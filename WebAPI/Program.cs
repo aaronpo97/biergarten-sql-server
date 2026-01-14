@@ -23,4 +23,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 app.MapFallbackToController("Handle404", "NotFound");
 app.Run();
-

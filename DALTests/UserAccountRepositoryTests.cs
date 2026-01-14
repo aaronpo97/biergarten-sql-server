@@ -19,7 +19,6 @@ namespace DALTests
         [Fact]
         public void Add_ShouldInsertUserAccount()
         {
-            
             // Arrange
             var userAccount = new UserAccount
             {
@@ -186,7 +185,7 @@ namespace DALTests
                     Email = $"pageuser_{Guid.NewGuid():N}@example.com",
                     CreatedAt = DateTime.UtcNow,
                     DateOfBirth = new DateTime(1993, 6, 6),
-                }
+                },
             };
 
             foreach (var user in users)
@@ -204,11 +203,11 @@ namespace DALTests
         [Fact]
         public void GetAll_WithPagination_ShouldValidateArguments()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => _repository.GetAll(0, 0).ToList()
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                _repository.GetAll(0, 0).ToList()
             );
-            Assert.Throws<ArgumentOutOfRangeException>(
-                () => _repository.GetAll(1, -1).ToList()
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                _repository.GetAll(1, -1).ToList()
             );
         }
     }

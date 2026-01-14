@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDialectMappings">
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/01-schema/schema.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/02-functions/UDF_GetCountryIdByCode.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/02-functions/UDF_GetStateProvinceIdByCode.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/03-crud/01-UserAccount/USP_CreateUserAccount.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/03-crud/01-UserAccount/USP_GetAllUserAccounts.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/03-crud/01-UserAccount/USP_GetUserAccountByEmail.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/03-crud/01-UserAccount/USP_GetUserAccountById.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/03-crud/01-UserAccount/USP_GetUserAccountByUsername.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/03-crud/02-UserCredential/USP_AddUserCredential.sql" dialect="TSQL" />
+    <file url="file://$PROJECT_DIR$/DataLayer/scripts/03-crud/03-UserVerification/USP_AddUserVerification.sql" dialect="TSQL" />
+  </component>
+</project>
