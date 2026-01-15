@@ -12,7 +12,6 @@ namespace DBSeed
 
     internal class UserSeeder : ISeeder
     {
-        private UserAccountRepository _userAccountRepository = new UserAccountRepository();
         
         
         private static readonly IReadOnlyList<(
@@ -133,15 +132,17 @@ namespace DBSeed
             foreach (var (firstName, lastName) in SeedNames)
             {
                // create the user in the database
-               var ua = new UserAccount
+               var userAccountId = Guid.NewGuid();
+               await AddUserAccountAsync(connection, new UserAccount
                {
+                   UserAccountId = userAccountId,
                    FirstName = firstName,
                    LastName = lastName,
                    Email = $"{firstName}.{lastName}@thebiergarten.app",
                    Username = $"{firstName[0]}.{lastName}",
                    DateOfBirth = GenerateDateOfBirth(rng)
-               };
-
+               });
+               createdUsers++;
 
                // add user credentials
                 if (!await HasUserCredentialAsync(connection, userAccountId))
@@ -165,6 +166,21 @@ namespace DBSeed
             Console.WriteLine($"Created {createdUsers} user accounts.");
             Console.WriteLine($"Added {createdCredentials} user credentials.");
             Console.WriteLine($"Added {createdVerifications} user verifications.");
+        }
+
+        private static async Task AddUserAccountAsync(SqlConnection connection, UserAccount ua)
+        {
+            await using var command = new SqlCommand("usp_CreateUserAccount", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add("@UserAccountId", SqlDbType.UniqueIdentifier).Value = ua.UserAccountId;
+            command.Parameters.Add("@Username", SqlDbType.NVarChar, 100).Value = ua.Username;
+            command.Parameters.Add("@FirstName", SqlDbType.NVarChar, 100).Value = ua.FirstName;
+            command.Parameters.Add("@LastName", SqlDbType.NVarChar, 100).Value = ua.LastName;
+            command.Parameters.Add("@Email", SqlDbType.NVarChar, 256).Value = ua.Email;
+            command.Parameters.Add("@DateOfBirth", SqlDbType.Date).Value = ua.DateOfBirth;
+
+            await command.ExecuteNonQueryAsync();
         }
 
         private static string GeneratePasswordHash(string pwd)

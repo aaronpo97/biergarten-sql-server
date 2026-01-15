@@ -1,51 +1,18 @@
-using DataAccessLayer;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories;
 
 namespace BusinessLayer.Services
 {
-    public class UserService : IUserService
+    public class UserService(IUserAccountRepository repository) : IUserService
     {
-        private readonly IUserAccountRepository _userAccountRepository;
-
-        public UserService(IUserAccountRepository userAccountRepository)
+        public async Task<IEnumerable<UserAccount>> GetAllAsync(int? limit = null, int? offset = null)
         {
-            _userAccountRepository = userAccountRepository;
+            return await repository.GetAll(limit, offset);
         }
 
-        public IEnumerable<UserAccount> GetAll(int? limit, int? offset)
+        public async Task<UserAccount?> GetByIdAsync(Guid id)
         {
-            return _userAccountRepository.GetAll(limit, offset);
-        }
-
-        public UserAccount? GetById(Guid id)
-        {
-            return _userAccountRepository.GetById(id);
-        }
-
-        public UserAccount? GetByUsername(string username)
-        {
-            return _userAccountRepository.GetByUsername(username);
-        }
-
-        public UserAccount? GetByEmail(string email)
-        {
-            return _userAccountRepository.GetByEmail(email);
-        }
-
-        public void Add(UserAccount userAccount)
-        {
-            _userAccountRepository.Add(userAccount);
-        }
-
-        public void Update(UserAccount userAccount)
-        {
-            _userAccountRepository.Update(userAccount);
-        }
-
-        public void Delete(Guid id)
-        {
-            _userAccountRepository.Delete(id);
+            return await repository.GetById(id);
         }
     }
 }

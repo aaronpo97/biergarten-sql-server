@@ -6,10 +6,10 @@ namespace DALTests
 {
     public class UserAccountRepositoryTests
     {
-        private readonly IUserAccountRepository _repository = new UserAccountRepository();
+        private readonly IUserAccountRepository _repository = new InMemoryUserAccountRepository();
 
         [Fact]
-        public void Add_ShouldInsertUserAccount()
+        public async Task Add_ShouldInsertUserAccount()
         {
             // Arrange
             var userAccount = new UserAccount
@@ -24,8 +24,8 @@ namespace DALTests
             };
 
             // Act
-            _repository.Add(userAccount);
-            var retrievedUser = _repository.GetById(userAccount.UserAccountId);
+            await _repository.Add(userAccount);
+            var retrievedUser = await _repository.GetById(userAccount.UserAccountId);
 
             // Assert
             Assert.NotNull(retrievedUser);
@@ -33,7 +33,7 @@ namespace DALTests
         }
 
         [Fact]
-        public void GetById_ShouldReturnUserAccount()
+        public async Task GetById_ShouldReturnUserAccount()
         {
             // Arrange
             var userId = Guid.NewGuid();
@@ -47,10 +47,10 @@ namespace DALTests
                 CreatedAt = DateTime.UtcNow,
                 DateOfBirth = new DateTime(1985, 5, 15),
             };
-            _repository.Add(userAccount);
+            await _repository.Add(userAccount);
 
             // Act
-            var retrievedUser = _repository.GetById(userId);
+            var retrievedUser = await _repository.GetById(userId);
 
             // Assert
             Assert.NotNull(retrievedUser);
@@ -58,7 +58,7 @@ namespace DALTests
         }
 
         [Fact]
-        public void Update_ShouldModifyUserAccount()
+        public async Task Update_ShouldModifyUserAccount()
         {
             // Arrange
             var userAccount = new UserAccount
@@ -71,12 +71,12 @@ namespace DALTests
                 CreatedAt = DateTime.UtcNow,
                 DateOfBirth = new DateTime(1992, 3, 10),
             };
-            _repository.Add(userAccount);
+            await _repository.Add(userAccount);
 
             // Act
             userAccount.FirstName = "Updated";
-            _repository.Update(userAccount);
-            var updatedUser = _repository.GetById(userAccount.UserAccountId);
+            await _repository.Update(userAccount);
+            var updatedUser = await _repository.GetById(userAccount.UserAccountId);
 
             // Assert
             Assert.NotNull(updatedUser);
@@ -84,7 +84,7 @@ namespace DALTests
         }
 
         [Fact]
-        public void Delete_ShouldRemoveUserAccount()
+        public async Task Delete_ShouldRemoveUserAccount()
         {
             // Arrange
             var userAccount = new UserAccount
@@ -97,18 +97,18 @@ namespace DALTests
                 CreatedAt = DateTime.UtcNow,
                 DateOfBirth = new DateTime(1995, 7, 20),
             };
-            _repository.Add(userAccount);
+            await _repository.Add(userAccount);
 
             // Act
-            _repository.Delete(userAccount.UserAccountId);
-            var deletedUser = _repository.GetById(userAccount.UserAccountId);
+            await _repository.Delete(userAccount.UserAccountId);
+            var deletedUser = await _repository.GetById(userAccount.UserAccountId);
 
             // Assert
             Assert.Null(deletedUser);
         }
 
         [Fact]
-        public void GetAll_ShouldReturnAllUserAccounts()
+        public async Task GetAll_ShouldReturnAllUserAccounts()
         {
             // Arrange
             var user1 = new UserAccount
@@ -131,11 +131,11 @@ namespace DALTests
                 CreatedAt = DateTime.UtcNow,
                 DateOfBirth = new DateTime(1992, 2, 2),
             };
-            _repository.Add(user1);
-            _repository.Add(user2);
+            await _repository.Add(user1);
+            await _repository.Add(user2);
 
             // Act
-            var allUsers = _repository.GetAll(null, null);
+            var allUsers = await _repository.GetAll(null, null);
 
             // Assert
             Assert.NotNull(allUsers);
@@ -143,7 +143,7 @@ namespace DALTests
         }
 
         [Fact]
-        public void GetAll_WithPagination_ShouldRespectLimit()
+        public async Task GetAll_WithPagination_ShouldRespectLimit()
         {
             // Arrange
             var users = new List<UserAccount>
@@ -182,25 +182,99 @@ namespace DALTests
 
             foreach (var user in users)
             {
-                _repository.Add(user);
+                await _repository.Add(user);
             }
 
             // Act
-            var page = _repository.GetAll(2, 0).ToList();
+            var page = (await _repository.GetAll(2, 0)).ToList();
 
             // Assert
             Assert.Equal(2, page.Count);
         }
 
         [Fact]
-        public void GetAll_WithPagination_ShouldValidateArguments()
+        public async Task GetAll_WithPagination_ShouldValidateArguments()
         {
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-                _repository.GetAll(0, 0).ToList()
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                (await _repository.GetAll(0, 0)).ToList()
             );
-            Assert.Throws<ArgumentOutOfRangeException>(() =>
-                _repository.GetAll(1, -1).ToList()
+            await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                (await _repository.GetAll(1, -1)).ToList()
             );
         }
+    }
+
+    internal class InMemoryUserAccountRepository : IUserAccountRepository
+    {
+        private readonly Dictionary<Guid, UserAccount> _store = new();
+
+        public Task Add(UserAccount userAccount)
+        {
+            if (userAccount.UserAccountId == Guid.Empty)
+            {
+                userAccount.UserAccountId = Guid.NewGuid();
+            }
+            _store[userAccount.UserAccountId] = Clone(userAccount);
+            return Task.CompletedTask;
+        }
+
+        public Task<UserAccount?> GetById(Guid id)
+        {
+            _store.TryGetValue(id, out var user);
+            return Task.FromResult(user is null ? null : Clone(user));
+        }
+
+        public Task<IEnumerable<UserAccount>> GetAll(int? limit, int? offset)
+        {
+            if (limit.HasValue && limit.Value <= 0) throw new ArgumentOutOfRangeException(nameof(limit));
+            if (offset.HasValue && offset.Value < 0) throw new ArgumentOutOfRangeException(nameof(offset));
+
+            var query = _store.Values
+                .OrderBy(u => u.Username)
+                .Select(Clone);
+
+            if (offset.HasValue) query = query.Skip(offset.Value);
+            if (limit.HasValue) query = query.Take(limit.Value);
+
+            return Task.FromResult<IEnumerable<UserAccount>>(query.ToList());
+        }
+
+        public Task Update(UserAccount userAccount)
+        {
+            if (!_store.ContainsKey(userAccount.UserAccountId)) return Task.CompletedTask;
+            _store[userAccount.UserAccountId] = Clone(userAccount);
+            return Task.CompletedTask;
+        }
+
+        public Task Delete(Guid id)
+        {
+            _store.Remove(id);
+            return Task.CompletedTask;
+        }
+
+        public Task<UserAccount?> GetByUsername(string username)
+        {
+            var user = _store.Values.FirstOrDefault(u => u.Username == username);
+            return Task.FromResult(user is null ? null : Clone(user));
+        }
+
+        public Task<UserAccount?> GetByEmail(string email)
+        {
+            var user = _store.Values.FirstOrDefault(u => u.Email == email);
+            return Task.FromResult(user is null ? null : Clone(user));
+        }
+
+        private static UserAccount Clone(UserAccount u) => new()
+        {
+            UserAccountId = u.UserAccountId,
+            Username = u.Username,
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            Email = u.Email,
+            CreatedAt = u.CreatedAt,
+            UpdatedAt = u.UpdatedAt,
+            DateOfBirth = u.DateOfBirth,
+            Timer = u.Timer is null ? null : (byte[])u.Timer.Clone(),
+        };
     }
 }

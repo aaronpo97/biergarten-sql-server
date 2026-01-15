@@ -1,139 +1,59 @@
 using DataAccessLayer.Entities;
+using DataAccessLayer.Sql;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace DataAccessLayer.Repositories
 {
-    public class UserAccountRepository : IUserAccountRepository
+    public class UserAccountRepository(ISqlConnectionFactory connectionFactory)
+        : Repository<UserAccount>(connectionFactory), IUserAccountRepository
     {
-        private readonly string _connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                                                    ?? throw new InvalidOperationException(
-                                                        "The connection string is not set in the environment variables."
-                                                    );
-
-        public void Add(UserAccount userAccount)
+        public override async Task Add(UserAccount userAccount)
         {
-            using SqlConnection connection = new(_connectionString);
-            using SqlCommand command = new("usp_CreateUserAccount", connection);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-            
-            command.Parameters.AddWithValue(
-                "@UserAccountId",
-                userAccount.UserAccountId
-            );
-            command.Parameters.AddWithValue("@Username", userAccount.Username);
-            command.Parameters.AddWithValue(
-                "@FirstName",
-                userAccount.FirstName
-            );
-            command.Parameters.AddWithValue("@LastName", userAccount.LastName);
-            command.Parameters.AddWithValue("@Email", userAccount.Email);
-            command.Parameters.AddWithValue(
-                "@DateOfBirth",
-                userAccount.DateOfBirth
-            );
-            connection.Open();
-            command.ExecuteNonQuery();
+            await using var connection = await CreateConnection();
+            await using var command = new SqlCommand("usp_CreateUserAccount", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add("@UserAccountId", SqlDbType.UniqueIdentifier).Value = userAccount.UserAccountId;
+            command.Parameters.Add("@Username", SqlDbType.NVarChar, 100).Value = userAccount.Username;
+            command.Parameters.Add("@FirstName", SqlDbType.NVarChar, 100).Value = userAccount.FirstName;
+            command.Parameters.Add("@LastName", SqlDbType.NVarChar, 100).Value = userAccount.LastName;
+            command.Parameters.Add("@Email", SqlDbType.NVarChar, 256).Value = userAccount.Email;
+            command.Parameters.Add("@DateOfBirth", SqlDbType.Date).Value = userAccount.DateOfBirth;
+
+            await command.ExecuteNonQueryAsync();
         }
 
-        public UserAccount? GetById(Guid id)
+        public override async Task<UserAccount?> GetById(Guid id)
         {
-            using SqlConnection connection = new(_connectionString);
-            using SqlCommand command = new(
-                "usp_GetUserAccountById",
-                connection
-            );
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@UserAccountId", id);
-            connection.Open();
-
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.Read() ? MapToEntity(reader) : null;
-        }
-
-        public void Update(UserAccount userAccount)
-        {
-            using SqlConnection connection = new(_connectionString);
-            using SqlCommand command = new("usp_UpdateUserAccount", connection);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-            command.Parameters.AddWithValue(
-                "@UserAccountId",
-                userAccount.UserAccountId
-            );
-            command.Parameters.AddWithValue("@Username", userAccount.Username);
-            command.Parameters.AddWithValue(
-                "@FirstName",
-                userAccount.FirstName
-            );
-            command.Parameters.AddWithValue("@LastName", userAccount.LastName);
-            command.Parameters.AddWithValue("@Email", userAccount.Email);
-            command.Parameters.AddWithValue(
-                "@DateOfBirth",
-                userAccount.DateOfBirth
-            );
-            command.Parameters.AddWithValue(
-                "@UserAccountId",
-                userAccount.UserAccountId
-            );
-            connection.Open();
-            command.ExecuteNonQuery();
-        }
-
-        public void Delete(Guid id)
-        {
-            using SqlConnection connection = new(_connectionString);
-            using SqlCommand command = new("usp_DeleteUserAccount", connection);
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@UserAccountId", id);
-            connection.Open();
-            command.ExecuteNonQuery();
-        }
-
-      
-        public IEnumerable<UserAccount> GetAll(int? limit, int? offset)
-        {
-            if (limit is <= 0)
+            await using var connection = await CreateConnection();
+            await using var command = new SqlCommand("usp_GetUserAccountById", connection)
             {
-                throw new ArgumentOutOfRangeException(
-                    nameof(limit),
-                    "Limit must be greater than zero."
-                );
-            }
+                CommandType = CommandType.StoredProcedure
+            };
 
-            if (offset < 0)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(offset),
-                    "Offset cannot be negative."
-                );
-            }
+            command.Parameters.Add("@UserAccountId", SqlDbType.UniqueIdentifier).Value = id;
 
-            if (offset.HasValue && !limit.HasValue)
-            {
-                throw new ArgumentOutOfRangeException(
-                    nameof(offset),
-                    "Offset cannot be provided without a limit."
-                );
-            }
+            await using var reader = await command.ExecuteReaderAsync();
+            return await reader.ReadAsync() ? MapToEntity(reader) : null;
+        }
 
-            using SqlConnection connection = new(_connectionString);
-            using SqlCommand command = new(
-                "usp_GetAllUserAccounts",
-                connection
-            );
-            command.CommandType = System.Data.CommandType.StoredProcedure;
+        public override async Task<IEnumerable<UserAccount>> GetAll(int? limit, int? offset)
+        {
+            await using var connection = await CreateConnection();
+            await using var command = new SqlCommand("usp_GetAllUserAccounts", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
             if (limit.HasValue)
-            {
-                command.Parameters.AddWithValue("@Limit", limit.Value);
-            }
-            if (offset.HasValue)
-            {
-                command.Parameters.AddWithValue("@Offset", offset.Value);
-            }
-            connection.Open();
+                command.Parameters.Add("@Limit", SqlDbType.Int).Value = limit.Value;
 
-            using SqlDataReader reader = command.ExecuteReader();
-            List<UserAccount> users = new();
-            while (reader.Read())
+            if (offset.HasValue)
+                command.Parameters.Add("@Offset", SqlDbType.Int).Value = offset.Value;
+
+            await using var reader = await command.ExecuteReaderAsync();
+            var users = new List<UserAccount>();
+
+            while (await reader.ReadAsync())
             {
                 users.Add(MapToEntity(reader));
             }
@@ -141,49 +61,73 @@ namespace DataAccessLayer.Repositories
             return users;
         }
 
-        public UserAccount? GetByUsername(string username)
+        public override async Task Update(UserAccount userAccount)
         {
-            using SqlConnection connection = new(_connectionString);
-            using SqlCommand command = new(
-                "usp_GetUserAccountByUsername",
-                connection
-            );
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@Username", username);
-            connection.Open();
+            await using var connection = await CreateConnection();
+            await using var command = new SqlCommand("usp_UpdateUserAccount", connection);
+            command.CommandType = CommandType.StoredProcedure;
 
-            using SqlDataReader? reader = command.ExecuteReader();
-            return reader.Read() ? MapToEntity(reader) : null;
+            command.Parameters.Add("@UserAccountId", SqlDbType.UniqueIdentifier).Value = userAccount.UserAccountId;
+            command.Parameters.Add("@Username", SqlDbType.NVarChar, 100).Value = userAccount.Username;
+            command.Parameters.Add("@FirstName", SqlDbType.NVarChar, 100).Value = userAccount.FirstName;
+            command.Parameters.Add("@LastName", SqlDbType.NVarChar, 100).Value = userAccount.LastName;
+            command.Parameters.Add("@Email", SqlDbType.NVarChar, 256).Value = userAccount.Email;
+            command.Parameters.Add("@DateOfBirth", SqlDbType.Date).Value = userAccount.DateOfBirth;
+
+            await command.ExecuteNonQueryAsync();
         }
 
-        public UserAccount? GetByEmail(string email)
+        public override async Task Delete(Guid id)
         {
-            using SqlConnection connection = new(_connectionString);
-            using SqlCommand command = new(
-                "usp_GetUserAccountByEmail",
-                connection
-            );
-            command.CommandType = System.Data.CommandType.StoredProcedure;
-            command.Parameters.AddWithValue("@Email", email);
-            connection.Open();
+            await using var connection = await CreateConnection();
+            await using var command = new SqlCommand("usp_DeleteUserAccount", connection);
+            command.CommandType = CommandType.StoredProcedure;
 
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.Read() ? MapToEntity(reader) : null;
+            command.Parameters.Add("@UserAccountId", SqlDbType.UniqueIdentifier).Value = id;
+            await command.ExecuteNonQueryAsync();
         }
 
-        public UserAccount MapToEntity(SqlDataReader reader)
+        public async Task<UserAccount?> GetByUsername(string username)
+        {
+            await using var connection = await CreateConnection();
+            await using var command = new SqlCommand("usp_GetUserAccountByUsername", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add("@Username", SqlDbType.NVarChar, 100).Value = username;
+
+            await using var reader = await command.ExecuteReaderAsync();
+            return await reader.ReadAsync() ? MapToEntity(reader) : null;
+        }
+
+        public async Task<UserAccount?> GetByEmail(string email)
+        {
+            await using var connection = await CreateConnection();
+            await using var command = new SqlCommand("usp_GetUserAccountByEmail", connection);
+            command.CommandType = CommandType.StoredProcedure;
+
+            command.Parameters.Add("@Email", SqlDbType.NVarChar, 256).Value = email;
+
+            await using var reader = await command.ExecuteReaderAsync();
+            return await reader.ReadAsync() ? MapToEntity(reader) : null;
+        }
+
+        protected override UserAccount MapToEntity(SqlDataReader reader)
         {
             return new UserAccount
             {
-                UserAccountId = reader.GetGuid(0),
-                Username = reader.GetString(1),
-                FirstName = reader.GetString(2),
-                LastName = reader.GetString(3),
-                Email = reader.GetString(4),
-                CreatedAt = reader.GetDateTime(5),
-                UpdatedAt = reader.IsDBNull(6) ? null : reader.GetDateTime(6),
-                DateOfBirth = reader.GetDateTime(7),
-                Timer = reader.IsDBNull(8) ? null : (byte[])reader[8],
+                UserAccountId = reader.GetGuid(reader.GetOrdinal("UserAccountId")),
+                Username = reader.GetString(reader.GetOrdinal("Username")),
+                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                Email = reader.GetString(reader.GetOrdinal("Email")),
+                CreatedAt = reader.GetDateTime(reader.GetOrdinal("CreatedAt")),
+                UpdatedAt = reader.IsDBNull(reader.GetOrdinal("UpdatedAt"))
+                    ? null
+                    : reader.GetDateTime(reader.GetOrdinal("UpdatedAt")),
+                DateOfBirth = reader.GetDateTime(reader.GetOrdinal("DateOfBirth")),
+                Timer = reader.IsDBNull(reader.GetOrdinal("Timer"))
+                    ? null
+                    : (byte[])reader["Timer"]
             };
         }
     }

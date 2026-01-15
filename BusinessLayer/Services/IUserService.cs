@@ -2,9 +2,9 @@ using DataAccessLayer.Entities;
 
 namespace BusinessLayer.Services
 {
-    public interface IUserService : IService<UserAccount>
+    public interface IUserService
     {
-        UserAccount? GetByUsername(string username);
-        UserAccount? GetByEmail(string email);
+        Task<IEnumerable<UserAccount>> GetAllAsync(int? limit = null, int? offset = null);
+        Task<UserAccount?> GetByIdAsync(Guid id);
     }
 }
