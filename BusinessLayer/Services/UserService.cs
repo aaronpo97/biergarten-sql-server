@@ -1,5 +1,6 @@
 using DataAccessLayer;
 using DataAccessLayer.Entities;
+using DataAccessLayer.Repositories;
 
 namespace BusinessLayer.Services
 {

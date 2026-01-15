@@ -1,8 +1,6 @@
-using System;
-using System.Collections.Generic;
 using DataAccessLayer.Entities;
 
-namespace DataAccessLayer
+namespace DataAccessLayer.Repositories
 {
     public interface IUserAccountRepository : IRepository<UserAccount>
     {

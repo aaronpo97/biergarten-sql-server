@@ -1,20 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using DataAccessLayer;
 using DataAccessLayer.Entities;
-using Xunit;
+using DataAccessLayer.Repositories;
 
 namespace DALTests
 {
     public class UserAccountRepositoryTests
     {
-        private readonly IUserAccountRepository _repository;
-
-        public UserAccountRepositoryTests()
-        {
-            _repository = new UserAccountRepository();
-        }
+        private readonly IUserAccountRepository _repository = new UserAccountRepository();
 
         [Fact]
         public void Add_ShouldInsertUserAccount()
@@ -22,7 +14,7 @@ namespace DALTests
             // Arrange
             var userAccount = new UserAccount
             {
-                UserAccountID = Guid.NewGuid(),
+                UserAccountId = Guid.NewGuid(),
                 Username = "testuser",
                 FirstName = "Test",
                 LastName = "User",
@@ -33,7 +25,7 @@ namespace DALTests
 
             // Act
             _repository.Add(userAccount);
-            var retrievedUser = _repository.GetById(userAccount.UserAccountID);
+            var retrievedUser = _repository.GetById(userAccount.UserAccountId);
 
             // Assert
             Assert.NotNull(retrievedUser);
@@ -47,7 +39,7 @@ namespace DALTests
             var userId = Guid.NewGuid();
             var userAccount = new UserAccount
             {
-                UserAccountID = userId,
+                UserAccountId = userId,
                 Username = "existinguser",
                 FirstName = "Existing",
                 LastName = "User",
@@ -62,7 +54,7 @@ namespace DALTests
 
             // Assert
             Assert.NotNull(retrievedUser);
-            Assert.Equal(userId, retrievedUser.UserAccountID);
+            Assert.Equal(userId, retrievedUser.UserAccountId);
         }
 
         [Fact]
@@ -71,7 +63,7 @@ namespace DALTests
             // Arrange
             var userAccount = new UserAccount
             {
-                UserAccountID = Guid.NewGuid(),
+                UserAccountId = Guid.NewGuid(),
                 Username = "updatableuser",
                 FirstName = "Updatable",
                 LastName = "User",
@@ -84,7 +76,7 @@ namespace DALTests
             // Act
             userAccount.FirstName = "Updated";
             _repository.Update(userAccount);
-            var updatedUser = _repository.GetById(userAccount.UserAccountID);
+            var updatedUser = _repository.GetById(userAccount.UserAccountId);
 
             // Assert
             Assert.NotNull(updatedUser);
@@ -97,7 +89,7 @@ namespace DALTests
             // Arrange
             var userAccount = new UserAccount
             {
-                UserAccountID = Guid.NewGuid(),
+                UserAccountId = Guid.NewGuid(),
                 Username = "deletableuser",
                 FirstName = "Deletable",
                 LastName = "User",
@@ -108,8 +100,8 @@ namespace DALTests
             _repository.Add(userAccount);
 
             // Act
-            _repository.Delete(userAccount.UserAccountID);
-            var deletedUser = _repository.GetById(userAccount.UserAccountID);
+            _repository.Delete(userAccount.UserAccountId);
+            var deletedUser = _repository.GetById(userAccount.UserAccountId);
 
             // Assert
             Assert.Null(deletedUser);
@@ -121,7 +113,7 @@ namespace DALTests
             // Arrange
             var user1 = new UserAccount
             {
-                UserAccountID = Guid.NewGuid(),
+                UserAccountId = Guid.NewGuid(),
                 Username = "user1",
                 FirstName = "User",
                 LastName = "One",
@@ -131,7 +123,7 @@ namespace DALTests
             };
             var user2 = new UserAccount
             {
-                UserAccountID = Guid.NewGuid(),
+                UserAccountId = Guid.NewGuid(),
                 Username = "user2",
                 FirstName = "User",
                 LastName = "Two",
@@ -158,7 +150,7 @@ namespace DALTests
             {
                 new UserAccount
                 {
-                    UserAccountID = Guid.NewGuid(),
+                    UserAccountId = Guid.NewGuid(),
                     Username = $"pageuser_{Guid.NewGuid():N}",
                     FirstName = "Page",
                     LastName = "User",
@@ -168,7 +160,7 @@ namespace DALTests
                 },
                 new UserAccount
                 {
-                    UserAccountID = Guid.NewGuid(),
+                    UserAccountId = Guid.NewGuid(),
                     Username = $"pageuser_{Guid.NewGuid():N}",
                     FirstName = "Page",
                     LastName = "User",
@@ -178,7 +170,7 @@ namespace DALTests
                 },
                 new UserAccount
                 {
-                    UserAccountID = Guid.NewGuid(),
+                    UserAccountId = Guid.NewGuid(),
                     Username = $"pageuser_{Guid.NewGuid():N}",
                     FirstName = "Page",
                     LastName = "User",

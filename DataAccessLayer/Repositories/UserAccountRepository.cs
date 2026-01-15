@@ -1,30 +1,36 @@
-using System;
-using System.Collections.Generic;
 using DataAccessLayer.Entities;
 using Microsoft.Data.SqlClient;
 
-namespace DataAccessLayer
+namespace DataAccessLayer.Repositories
 {
     public class UserAccountRepository : IUserAccountRepository
     {
-        private readonly string _connectionString;
-
-        public UserAccountRepository()
-        {
-            // Retrieve the connection string from environment variables
-            _connectionString =
-                Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
-                ?? throw new InvalidOperationException(
-                    "The connection string is not set in the environment variables."
-                );
-        }
+        private readonly string _connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING")
+                                                    ?? throw new InvalidOperationException(
+                                                        "The connection string is not set in the environment variables."
+                                                    );
 
         public void Add(UserAccount userAccount)
         {
             using SqlConnection connection = new(_connectionString);
             using SqlCommand command = new("usp_CreateUserAccount", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
-            AddUserAccountCreateParameters(command, userAccount);
+            
+            command.Parameters.AddWithValue(
+                "@UserAccountId",
+                userAccount.UserAccountId
+            );
+            command.Parameters.AddWithValue("@Username", userAccount.Username);
+            command.Parameters.AddWithValue(
+                "@FirstName",
+                userAccount.FirstName
+            );
+            command.Parameters.AddWithValue("@LastName", userAccount.LastName);
+            command.Parameters.AddWithValue("@Email", userAccount.Email);
+            command.Parameters.AddWithValue(
+                "@DateOfBirth",
+                userAccount.DateOfBirth
+            );
             connection.Open();
             command.ExecuteNonQuery();
         }
@@ -41,7 +47,7 @@ namespace DataAccessLayer
             connection.Open();
 
             using SqlDataReader reader = command.ExecuteReader();
-            return reader.Read() ? MapUserAccount(reader) : null;
+            return reader.Read() ? MapToEntity(reader) : null;
         }
 
         public void Update(UserAccount userAccount)
@@ -49,7 +55,25 @@ namespace DataAccessLayer
             using SqlConnection connection = new(_connectionString);
             using SqlCommand command = new("usp_UpdateUserAccount", connection);
             command.CommandType = System.Data.CommandType.StoredProcedure;
-            AddUserAccountUpdateParameters(command, userAccount);
+            command.Parameters.AddWithValue(
+                "@UserAccountId",
+                userAccount.UserAccountId
+            );
+            command.Parameters.AddWithValue("@Username", userAccount.Username);
+            command.Parameters.AddWithValue(
+                "@FirstName",
+                userAccount.FirstName
+            );
+            command.Parameters.AddWithValue("@LastName", userAccount.LastName);
+            command.Parameters.AddWithValue("@Email", userAccount.Email);
+            command.Parameters.AddWithValue(
+                "@DateOfBirth",
+                userAccount.DateOfBirth
+            );
+            command.Parameters.AddWithValue(
+                "@UserAccountId",
+                userAccount.UserAccountId
+            );
             connection.Open();
             command.ExecuteNonQuery();
         }
@@ -64,9 +88,10 @@ namespace DataAccessLayer
             command.ExecuteNonQuery();
         }
 
+      
         public IEnumerable<UserAccount> GetAll(int? limit, int? offset)
         {
-            if (limit.HasValue && limit <= 0)
+            if (limit is <= 0)
             {
                 throw new ArgumentOutOfRangeException(
                     nameof(limit),
@@ -110,7 +135,7 @@ namespace DataAccessLayer
             List<UserAccount> users = new();
             while (reader.Read())
             {
-                users.Add(MapUserAccount(reader));
+                users.Add(MapToEntity(reader));
             }
 
             return users;
@@ -127,8 +152,8 @@ namespace DataAccessLayer
             command.Parameters.AddWithValue("@Username", username);
             connection.Open();
 
-            using SqlDataReader reader = command.ExecuteReader();
-            return reader.Read() ? MapUserAccount(reader) : null;
+            using SqlDataReader? reader = command.ExecuteReader();
+            return reader.Read() ? MapToEntity(reader) : null;
         }
 
         public UserAccount? GetByEmail(string email)
@@ -143,48 +168,14 @@ namespace DataAccessLayer
             connection.Open();
 
             using SqlDataReader reader = command.ExecuteReader();
-            return reader.Read() ? MapUserAccount(reader) : null;
+            return reader.Read() ? MapToEntity(reader) : null;
         }
 
-        private static void AddUserAccountCreateParameters(
-            SqlCommand command,
-            UserAccount userAccount
-        )
-        {
-            command.Parameters.AddWithValue(
-                "@UserAccountId",
-                userAccount.UserAccountID
-            );
-            command.Parameters.AddWithValue("@Username", userAccount.Username);
-            command.Parameters.AddWithValue(
-                "@FirstName",
-                userAccount.FirstName
-            );
-            command.Parameters.AddWithValue("@LastName", userAccount.LastName);
-            command.Parameters.AddWithValue("@Email", userAccount.Email);
-            command.Parameters.AddWithValue(
-                "@DateOfBirth",
-                userAccount.DateOfBirth
-            );
-        }
-
-        private static void AddUserAccountUpdateParameters(
-            SqlCommand command,
-            UserAccount userAccount
-        )
-        {
-            AddUserAccountCreateParameters(command, userAccount);
-            command.Parameters.AddWithValue(
-                "@UserAccountId",
-                userAccount.UserAccountID
-            );
-        }
-
-        private static UserAccount MapUserAccount(SqlDataReader reader)
+        public UserAccount MapToEntity(SqlDataReader reader)
         {
             return new UserAccount
             {
-                UserAccountID = reader.GetGuid(0),
+                UserAccountId = reader.GetGuid(0),
                 Username = reader.GetString(1),
                 FirstName = reader.GetString(2),
                 LastName = reader.GetString(3),

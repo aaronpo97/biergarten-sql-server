@@ -2,8 +2,8 @@ namespace DataAccessLayer.Entities;
 
 public class UserVerification
 {
-    public Guid UserVerificationID { get; set; }
-    public Guid UserAccountID { get; set; }
+    public Guid UserVerificationId { get; set; }
+    public Guid UserAccountId { get; set; }
     public DateTime VerificationDateTime { get; set; }
     public byte[]? Timer { get; set; }
 }

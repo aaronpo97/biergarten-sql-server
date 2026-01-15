@@ -2,7 +2,7 @@ namespace DataAccessLayer.Entities;
 
 public class UserAccount
 {
-    public Guid UserAccountID { get; set; }
+    public Guid UserAccountId { get; set; }
     public string Username { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;

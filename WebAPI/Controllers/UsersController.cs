@@ -65,15 +65,15 @@ namespace WebAPI.Controllers
         [HttpPost]
         public IActionResult CreateUser([FromBody] UserAccount userAccount)
         {
-            if (userAccount.UserAccountID == Guid.Empty)
+            if (userAccount.UserAccountId == Guid.Empty)
             {
-                userAccount.UserAccountID = Guid.NewGuid();
+                userAccount.UserAccountId = Guid.NewGuid();
             }
 
             _userService.Add(userAccount);
             return CreatedAtAction(
                 nameof(GetUserById),
-                new { id = userAccount.UserAccountID },
+                new { id = userAccount.UserAccountId },
                 userAccount
             );
         }
@@ -85,14 +85,14 @@ namespace WebAPI.Controllers
         )
         {
             if (
-                userAccount.UserAccountID != Guid.Empty
-                && userAccount.UserAccountID != id
+                userAccount.UserAccountId != Guid.Empty
+                && userAccount.UserAccountId != id
             )
             {
                 return BadRequest("UserAccountID does not match route id.");
             }
 
-            userAccount.UserAccountID = id;
+            userAccount.UserAccountId = id;
             _userService.Update(userAccount);
             return NoContent();
         }

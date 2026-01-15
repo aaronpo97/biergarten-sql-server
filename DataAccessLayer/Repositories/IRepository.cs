@@ -1,7 +1,8 @@
-using System;
-using System.Collections.Generic;
 
-namespace DataAccessLayer
+
+using Microsoft.Data.SqlClient;
+
+namespace DataAccessLayer.Repositories
 {
     public interface IRepository<T>
         where T : class
@@ -13,5 +14,7 @@ namespace DataAccessLayer
         T? GetById(Guid id);
         void Update(T entity);
         void Delete(Guid id);
+        
+        T MapToEntity(SqlDataReader entity);
     }
 }

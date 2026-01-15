@@ -1,6 +1,9 @@
 using Microsoft.Data.SqlClient;
 
-interface ISeeder
+namespace DBSeed
 {
-    Task SeedAsync(SqlConnection connection);
+    internal interface ISeeder
+    {
+        Task SeedAsync(SqlConnection connection);
+    }
 }
