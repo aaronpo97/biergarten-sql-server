@@ -1,6 +1,7 @@
 using DataAccessLayer;
 using DataAccessLayer.Entities;
 using DataAccessLayer.Repositories;
+using DataAccessLayer.Repositories.UserAccount;
 
 namespace DALTests
 {

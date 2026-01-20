@@ -1,5 +1,6 @@
 using BusinessLayer.Services;
 using DataAccessLayer.Repositories;
+using DataAccessLayer.Repositories.UserAccount;
 using DataAccessLayer.Sql;
 
 var builder = WebApplication.CreateBuilder(args);
