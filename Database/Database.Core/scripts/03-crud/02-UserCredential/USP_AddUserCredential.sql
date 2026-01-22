@@ -1,6 +1,6 @@
-CREATE OR ALTER PROCEDURE dbo.USP_AddUserCredential(
-    @UserAccountId uniqueidentifier,
-    @Hash nvarchar(max)
+CREATE OR ALTER PROCEDURE dbo.USP_AddUpdateUserCredential(
+    @UserAccountId UNIQUEIDENTIFIER,
+    @Hash NVARCHAR(MAX)
 )
 AS
 BEGIN
@@ -16,14 +16,14 @@ BEGIN
     )
         THROW 50001, 'UserAccountID does not exist.', 1;
     
-    IF EXISTS (
-        SELECT 1 
-        FROM dbo.UserCredential
-        WHERE UserAccountID = @UserAccountId
-    )
-        THROW 50002, 'UserCredential for this UserAccountID already exists.', 1;
-    
 
+    -- invalidate old credentials
+    UPDATE dbo.UserCredential 
+    SET IsRevoked = 1,
+        RevokedAt = GETDATE()
+    WHERE UserAccountId = @UserAccountId
+      AND IsRevoked = 0;
+      
     INSERT INTO dbo.UserCredential
         (UserAccountId, Hash)
     VALUES 

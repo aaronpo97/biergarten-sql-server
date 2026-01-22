@@ -25,8 +25,8 @@ namespace DALTests
             };
 
             // Act
-            await _repository.Add(userAccount);
-            var retrievedUser = await _repository.GetById(userAccount.UserAccountId);
+            await _repository.AddAsync(userAccount);
+            var retrievedUser = await _repository.GetByIdAsync(userAccount.UserAccountId);
 
             // Assert
             Assert.NotNull(retrievedUser);
@@ -48,10 +48,10 @@ namespace DALTests
                 CreatedAt = DateTime.UtcNow,
                 DateOfBirth = new DateTime(1985, 5, 15),
             };
-            await _repository.Add(userAccount);
+            await _repository.AddAsync(userAccount);
 
             // Act
-            var retrievedUser = await _repository.GetById(userId);
+            var retrievedUser = await _repository.GetByIdAsync(userId);
 
             // Assert
             Assert.NotNull(retrievedUser);
@@ -72,12 +72,12 @@ namespace DALTests
                 CreatedAt = DateTime.UtcNow,
                 DateOfBirth = new DateTime(1992, 3, 10),
             };
-            await _repository.Add(userAccount);
+            await _repository.AddAsync(userAccount);
 
             // Act
             userAccount.FirstName = "Updated";
-            await _repository.Update(userAccount);
-            var updatedUser = await _repository.GetById(userAccount.UserAccountId);
+            await _repository.UpdateAsync(userAccount);
+            var updatedUser = await _repository.GetByIdAsync(userAccount.UserAccountId);
 
             // Assert
             Assert.NotNull(updatedUser);
@@ -98,11 +98,11 @@ namespace DALTests
                 CreatedAt = DateTime.UtcNow,
                 DateOfBirth = new DateTime(1995, 7, 20),
             };
-            await _repository.Add(userAccount);
+            await _repository.AddAsync(userAccount);
 
             // Act
-            await _repository.Delete(userAccount.UserAccountId);
-            var deletedUser = await _repository.GetById(userAccount.UserAccountId);
+            await _repository.DeleteAsync(userAccount.UserAccountId);
+            var deletedUser = await _repository.GetByIdAsync(userAccount.UserAccountId);
 
             // Assert
             Assert.Null(deletedUser);
@@ -132,11 +132,11 @@ namespace DALTests
                 CreatedAt = DateTime.UtcNow,
                 DateOfBirth = new DateTime(1992, 2, 2),
             };
-            await _repository.Add(user1);
-            await _repository.Add(user2);
+            await _repository.AddAsync(user1);
+            await _repository.AddAsync(user2);
 
             // Act
-            var allUsers = await _repository.GetAll(null, null);
+            var allUsers = await _repository.GetAllAsync(null, null);
 
             // Assert
             Assert.NotNull(allUsers);
@@ -183,11 +183,11 @@ namespace DALTests
 
             foreach (var user in users)
             {
-                await _repository.Add(user);
+                await _repository.AddAsync(user);
             }
 
             // Act
-            var page = (await _repository.GetAll(2, 0)).ToList();
+            var page = (await _repository.GetAllAsync(2, 0)).ToList();
 
             // Assert
             Assert.Equal(2, page.Count);
@@ -197,10 +197,10 @@ namespace DALTests
         public async Task GetAll_WithPagination_ShouldValidateArguments()
         {
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-                (await _repository.GetAll(0, 0)).ToList()
+                (await _repository.GetAllAsync(0, 0)).ToList()
             );
             await Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
-                (await _repository.GetAll(1, -1)).ToList()
+                (await _repository.GetAllAsync(1, -1)).ToList()
             );
         }
     }
@@ -209,7 +209,7 @@ namespace DALTests
     {
         private readonly Dictionary<Guid, UserAccount> _store = new();
 
-        public Task Add(UserAccount userAccount)
+        public Task AddAsync(UserAccount userAccount)
         {
             if (userAccount.UserAccountId == Guid.Empty)
             {
@@ -219,13 +219,13 @@ namespace DALTests
             return Task.CompletedTask;
         }
 
-        public Task<UserAccount?> GetById(Guid id)
+        public Task<UserAccount?> GetByIdAsync(Guid id)
         {
             _store.TryGetValue(id, out var user);
             return Task.FromResult(user is null ? null : Clone(user));
         }
 
-        public Task<IEnumerable<UserAccount>> GetAll(int? limit, int? offset)
+        public Task<IEnumerable<UserAccount>> GetAllAsync(int? limit, int? offset)
         {
             if (limit.HasValue && limit.Value <= 0) throw new ArgumentOutOfRangeException(nameof(limit));
             if (offset.HasValue && offset.Value < 0) throw new ArgumentOutOfRangeException(nameof(offset));
@@ -240,26 +240,26 @@ namespace DALTests
             return Task.FromResult<IEnumerable<UserAccount>>(query.ToList());
         }
 
-        public Task Update(UserAccount userAccount)
+        public Task UpdateAsync(UserAccount userAccount)
         {
             if (!_store.ContainsKey(userAccount.UserAccountId)) return Task.CompletedTask;
             _store[userAccount.UserAccountId] = Clone(userAccount);
             return Task.CompletedTask;
         }
 
-        public Task Delete(Guid id)
+        public Task DeleteAsync(Guid id)
         {
             _store.Remove(id);
             return Task.CompletedTask;
         }
 
-        public Task<UserAccount?> GetByUsername(string username)
+        public Task<UserAccount?> GetByUsernameAsync(string username)
         {
             var user = _store.Values.FirstOrDefault(u => u.Username == username);
             return Task.FromResult(user is null ? null : Clone(user));
         }
 
-        public Task<UserAccount?> GetByEmail(string email)
+        public Task<UserAccount?> GetByEmailAsync(string email)
         {
             var user = _store.Values.FirstOrDefault(u => u.Email == email);
             return Task.FromResult(user is null ? null : Clone(user));

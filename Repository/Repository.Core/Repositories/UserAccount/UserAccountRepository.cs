@@ -7,7 +7,7 @@ namespace DataAccessLayer.Repositories.UserAccount
     public class UserAccountRepository(ISqlConnectionFactory connectionFactory)
         : Repository<Entities.UserAccount>(connectionFactory), IUserAccountRepository
     {
-        public override async Task Add(Entities.UserAccount userAccount)
+        public override async Task AddAsync(Entities.UserAccount userAccount)
         {
             await using var connection = await CreateConnection();
             await using var command = new SqlCommand("usp_CreateUserAccount", connection);
@@ -23,7 +23,7 @@ namespace DataAccessLayer.Repositories.UserAccount
             await command.ExecuteNonQueryAsync();
         }
 
-        public override async Task<Entities.UserAccount?> GetById(Guid id)
+        public override async Task<Entities.UserAccount?> GetByIdAsync(Guid id)
         {
             await using var connection = await CreateConnection();
             await using var command = new SqlCommand("usp_GetUserAccountById", connection)
@@ -37,7 +37,7 @@ namespace DataAccessLayer.Repositories.UserAccount
             return await reader.ReadAsync() ? MapToEntity(reader) : null;
         }
 
-        public override async Task<IEnumerable<Entities.UserAccount>> GetAll(int? limit, int? offset)
+        public override async Task<IEnumerable<Entities.UserAccount>> GetAllAsync(int? limit, int? offset)
         {
             await using var connection = await CreateConnection();
             await using var command = new SqlCommand("usp_GetAllUserAccounts", connection);
@@ -60,7 +60,7 @@ namespace DataAccessLayer.Repositories.UserAccount
             return users;
         }
 
-        public override async Task Update(Entities.UserAccount userAccount)
+        public override async Task UpdateAsync(Entities.UserAccount userAccount)
         {
             await using var connection = await CreateConnection();
             await using var command = new SqlCommand("usp_UpdateUserAccount", connection);
@@ -76,7 +76,7 @@ namespace DataAccessLayer.Repositories.UserAccount
             await command.ExecuteNonQueryAsync();
         }
 
-        public override async Task Delete(Guid id)
+        public override async Task DeleteAsync(Guid id)
         {
             await using var connection = await CreateConnection();
             await using var command = new SqlCommand("usp_DeleteUserAccount", connection);
@@ -86,7 +86,7 @@ namespace DataAccessLayer.Repositories.UserAccount
             await command.ExecuteNonQueryAsync();
         }
 
-        public async Task<Entities.UserAccount?> GetByUsername(string username)
+        public async Task<Entities.UserAccount?> GetByUsernameAsync(string username)
         {
             await using var connection = await CreateConnection();
             await using var command = new SqlCommand("usp_GetUserAccountByUsername", connection);
@@ -98,7 +98,7 @@ namespace DataAccessLayer.Repositories.UserAccount
             return await reader.ReadAsync() ? MapToEntity(reader) : null;
         }
 
-        public async Task<Entities.UserAccount?> GetByEmail(string email)
+        public async Task<Entities.UserAccount?> GetByEmailAsync(string email)
         {
             await using var connection = await CreateConnection();
             await using var command = new SqlCommand("usp_GetUserAccountByEmail", connection);

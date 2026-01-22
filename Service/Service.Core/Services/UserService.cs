@@ -8,12 +8,12 @@ namespace BusinessLayer.Services
     {
         public async Task<IEnumerable<UserAccount>> GetAllAsync(int? limit = null, int? offset = null)
         {
-            return await repository.GetAll(limit, offset);
+            return await repository.GetAllAsync(limit, offset);
         }
 
         public async Task<UserAccount?> GetByIdAsync(Guid id)
         {
-            return await repository.GetById(id);
+            return await repository.GetByIdAsync(id);
         }
     }
 }

@@ -1,11 +1,7 @@
-namespace DataAccessLayer.Repositories.UserCredential;
+using DataAccessLayer.Entities;
 
 public interface IUserCredentialRepository
 {
-    Task Add(Entities.UserCredential credential);
-    Task<Entities.UserCredential?> GetById(Guid userCredentialId);
-    Task<Entities.UserCredential?> GetByUserAccountId(Guid userAccountId);
-    Task<IEnumerable<Entities.UserCredential>> GetAll(int? limit, int? offset);
-    Task Update(Entities.UserCredential credential);
-    Task Delete(Guid userCredentialId);
+    Task RotateCredentialAsync(Guid userAccountId, UserCredential credential);
+    Task<UserCredential?> GetActiveCredentialByUserAccountIdAsync(Guid userAccountId);
 }

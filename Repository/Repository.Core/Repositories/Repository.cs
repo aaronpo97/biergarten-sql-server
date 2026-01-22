@@ -13,11 +13,11 @@ namespace DataAccessLayer.Repositories
             return connection;
         }
 
-        public abstract Task Add(T entity);
-        public abstract Task<IEnumerable<T>> GetAll(int? limit, int? offset);
-        public abstract Task<T?> GetById(Guid id);
-        public abstract Task Update(T entity);
-        public abstract Task Delete(Guid id);
+        public abstract Task AddAsync(T entity);
+        public abstract Task<IEnumerable<T>> GetAllAsync(int? limit, int? offset);
+        public abstract Task<T?> GetByIdAsync(Guid id);
+        public abstract Task UpdateAsync(T entity);
+        public abstract Task DeleteAsync(Guid id);
 
         protected abstract T MapToEntity(SqlDataReader reader);
     }

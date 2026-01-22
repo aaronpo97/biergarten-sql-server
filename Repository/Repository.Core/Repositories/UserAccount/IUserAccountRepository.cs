@@ -4,12 +4,12 @@ namespace DataAccessLayer.Repositories.UserAccount
 {
     public interface IUserAccountRepository
     {
-        Task Add(Entities.UserAccount userAccount);
-        Task<Entities.UserAccount?> GetById(Guid id);
-        Task<IEnumerable<Entities.UserAccount>> GetAll(int? limit, int? offset);
-        Task Update(Entities.UserAccount userAccount);
-        Task Delete(Guid id);
-        Task<Entities.UserAccount?> GetByUsername(string username);
-        Task<Entities.UserAccount?> GetByEmail(string email);
+        Task AddAsync(Entities.UserAccount userAccount);
+        Task<Entities.UserAccount?> GetByIdAsync(Guid id);
+        Task<IEnumerable<Entities.UserAccount>> GetAllAsync(int? limit, int? offset);
+        Task UpdateAsync(Entities.UserAccount userAccount);
+        Task DeleteAsync(Guid id);
+        Task<Entities.UserAccount?> GetByUsernameAsync(string username);
+        Task<Entities.UserAccount?> GetByEmailAsync(string email);
     }
 }
