@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE dbo.USP_AddUpdateUserCredential(
+CREATE OR ALTER PROCEDURE dbo.USP_RotateUserCredential(
     @UserAccountId UNIQUEIDENTIFIER,
     @Hash NVARCHAR(MAX)
 )
@@ -9,25 +9,22 @@ BEGIN
 
     BEGIN TRANSACTION;
 
-    IF NOT EXISTS (
-        SELECT 1 
-        FROM dbo.UserAccount 
-        WHERE UserAccountID = @UserAccountId
-    )
-        THROW 50001, 'UserAccountID does not exist.', 1;
-    
+    IF NOT EXISTS (SELECT 1
+                   FROM dbo.UserAccount
+                   WHERE UserAccountID = @UserAccountId)
+        BEGIN
+            ROLLBACK TRANSACTION;
+        END
 
-    -- invalidate old credentials
-    UPDATE dbo.UserCredential 
+    -- invalidate all other credentials -- set them to revoked
+    UPDATE dbo.UserCredential
     SET IsRevoked = 1,
         RevokedAt = GETDATE()
-    WHERE UserAccountId = @UserAccountId
-      AND IsRevoked = 0;
-      
+    WHERE UserAccountId = @UserAccountId;
+
     INSERT INTO dbo.UserCredential
         (UserAccountId, Hash)
-    VALUES 
-        (@UserAccountId, @Hash);
+    VALUES (@UserAccountId, @Hash);
 
     COMMIT TRANSACTION;
 END;

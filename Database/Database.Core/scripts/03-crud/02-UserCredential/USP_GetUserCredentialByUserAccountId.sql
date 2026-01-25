@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE dbo.USP_GetUserCredentialByUserAccountId(
+CREATE OR ALTER PROCEDURE dbo.USP_GetActiveUserCredentialByUserAccountId(
     @UserAccountId UNIQUEIDENTIFIER
 )
 AS
