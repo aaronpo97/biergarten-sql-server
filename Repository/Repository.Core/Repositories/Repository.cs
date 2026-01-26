@@ -1,12 +1,12 @@
+using System.Data.Common;
 using DataAccessLayer.Sql;
-using Microsoft.Data.SqlClient;
 
 namespace DataAccessLayer.Repositories
 {
     public abstract class Repository<T>(ISqlConnectionFactory connectionFactory)
         where T : class
     {
-        protected async Task<SqlConnection> CreateConnection()
+        protected async Task<DbConnection> CreateConnection()
         {
             var connection = connectionFactory.CreateConnection();
             await connection.OpenAsync();
@@ -19,6 +19,6 @@ namespace DataAccessLayer.Repositories
         public abstract Task UpdateAsync(T entity);
         public abstract Task DeleteAsync(Guid id);
 
-        protected abstract T MapToEntity(SqlDataReader reader);
+        protected abstract T MapToEntity(DbDataReader reader);
     }
 }

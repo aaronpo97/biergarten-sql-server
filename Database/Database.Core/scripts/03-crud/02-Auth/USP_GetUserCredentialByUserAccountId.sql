@@ -4,7 +4,6 @@ CREATE OR ALTER PROCEDURE dbo.USP_GetActiveUserCredentialByUserAccountId(
 AS
 BEGIN
     SET NOCOUNT ON;
-    SET XACT_ABORT ON;
 
     SELECT 
         UserCredentialId,

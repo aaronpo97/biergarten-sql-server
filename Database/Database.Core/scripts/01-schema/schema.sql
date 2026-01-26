@@ -171,7 +171,6 @@ CREATE TABLE UserCredential -- delete credentials when user account is deleted
 
     Timer     ROWVERSION,
 
-
     CONSTRAINT PK_UserCredential
         PRIMARY KEY (UserCredentialID),
 
